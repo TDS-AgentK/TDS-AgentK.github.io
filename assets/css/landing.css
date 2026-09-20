@@ -41,3 +41,5 @@
 .l-chrono a:hover { background: #fff6d8; }
 .l-chrono b { font: 700 18px Georgia, serif; } .l-chrono em { font-size: 12px; color: #6b5a2e; }
 @media (max-width: 640px) { .l-une { grid-template-columns: 1fr; } .l-chrono a { grid-template-columns: 1fr; } .l-etat { max-width: 45%; } }
+
+.l-emoji { display: block; font-size: 30px; line-height: 34px; height: 34px; width: 34px; text-align: center; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .35)); }
