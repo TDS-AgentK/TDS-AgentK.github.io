@@ -89,8 +89,6 @@
 .dj-lune-phase { font: 12px Helvetica, Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #cfc4a4; }
 .dj-lunes-ligne { margin: 4px 0 0; font: 13px/1.4 Georgia, serif; color: #4a3b1c; text-align: left !important; }
 .dj-lunes-ligne:empty { display: none; }
-.dj-jourlunaire { margin: 8px 0 0 !important; font: italic 12px Georgia, serif; color: #6b5a2e; }
-.dj-jourlunaire:empty { display: none; }
 
 /* Calendrier lunaire (fenêtre) */
 .dj-bouton-lunes { display: block; margin: 12px auto 2px; padding: 8px 18px; font: 700 13px Helvetica, Arial, sans-serif; color: #fff; cursor: pointer; text-shadow: 0 1px 1px rgba(0, 0, 0, .6);

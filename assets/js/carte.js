@@ -44,14 +44,19 @@
   racine.classList.add("cm");
   racine.innerHTML = "";
 
+  var races = data.races || [];
   var champ = h("input", { type: "search", class: "cm-recherche", placeholder: "Chercher un lieu…", "aria-label": "Chercher un lieu" });
   var puces = h("div", { class: "cm-puces", role: "group", "aria-label": "Filtrer par catégorie" });
   var compteur = h("p", { class: "cm-compteur", "aria-live": "polite" });
   var liste = h("ul", { class: "cm-liste" });
   var noms = h("input", { type: "checkbox", id: "cm-noms" });
   var listeRoyaumes = h("ul", { class: "cm-royaumes-liste", hidden: "" });
+  var choixRace = h("select", { class: "cm-races", "aria-label": "Voir où vit une race" }, [h("option", { value: "", text: "Où vit une race ? (choisir)" })]);
+  var infoRace = h("p", { class: "cm-race-info", hidden: "", "aria-live": "polite" });
+  var blocRaces = h("div", { class: "cm-bloc-races" }, [choixRace, infoRace]);
+  if (!races.length) blocRaces.hidden = true;
   var menu = h("div", { class: "cm-menu" }, [
-    champ, puces, listeRoyaumes,
+    champ, puces, listeRoyaumes, blocRaces,
     h("label", { class: "cm-option", for: "cm-noms" }, [noms, h("span", { text: " Afficher les noms sur la carte" })]),
     compteur, liste,
   ]);
@@ -89,7 +94,7 @@
   /* ---------- état ---------- */
   var carte = null, W = 1, H = 1, s = 1, tx = 0, ty = 0, vw = 0, vh = 0;
   var sMin = 0.1, sMax = 2;
-  var selection = null, filtreCat = "toutes", requete = "", royaumeChoisi = null, zonesVisibles = false;
+  var selection = null, filtreCat = "toutes", requete = "", royaumeChoisi = null, zonesVisibles = false, raceChoisie = null;
   var anim = null, actif = false;
 
   function mesurer() { vw = vue.clientWidth; vh = vue.clientHeight; }
@@ -184,12 +189,39 @@
     itemsRoyaumes[r.id] = h("li", {}, [bt]);
     listeRoyaumes.appendChild(itemsRoyaumes[r.id]);
   });
+  races.forEach(function (r) { choixRace.appendChild(h("option", { value: r.id, text: r.nom })); });
+  var NIVEAU = { principale: "principale", rare: "plus rare" };
+  function majRace() {
+    var r = raceChoisie;
+    Object.keys(zones).forEach(function (k) {
+      var de = !!r && !!r.niveaux[k];
+      zones[k].classList.toggle("de-race", de);
+      zones[k].classList.toggle("hors-race", !!r && !de);
+      if (etiquettes[k]) etiquettes[k].classList.toggle("hors-race", !!r && !de);
+      if (itemsRoyaumes[k]) itemsRoyaumes[k].classList.toggle("hors-race", !!r && !de);
+    });
+    infoRace.innerHTML = "";
+    infoRace.hidden = !r;
+    if (!r) return;
+    var noms = Object.keys(r.niveaux).map(function (k) { return (parRoyaume[k] ? parRoyaume[k].nom : k) + (NIVEAU[r.niveaux[k]] ? " (" + NIVEAU[r.niveaux[k]] + ")" : ""); });
+    infoRace.appendChild(h("strong", { text: r.nom + " : " }));
+    infoRace.appendChild(document.createTextNode(noms.join(", ") + "."));
+    if (r.lien) { infoRace.appendChild(document.createTextNode(" ")); infoRace.appendChild(h("a", { href: r.lien, text: "Voir la fiche" })); }
+  }
+  choixRace.addEventListener("change", function () {
+    raceChoisie = null;
+    races.forEach(function (r) { if (r.id === choixRace.value) raceChoisie = r; });
+    if (raceChoisie && !zonesVisibles) afficherZones(true);
+    if (raceChoisie && royaumeChoisi) fermerFiche();
+    majRace();
+  });
   function afficherZones(oui) {
     zonesVisibles = oui;
     racine.classList.toggle("cm-avec-royaumes", oui);
     listeRoyaumes.hidden = !oui;
     if (puceZones) puceZones.setAttribute("aria-pressed", oui ? "true" : "false");
     if (!oui && royaumeChoisi) fermerFiche();
+    if (!oui && raceChoisie) { raceChoisie = null; choixRace.value = ""; majRace(); }
   }
   function royaumeSous(e) {
     if (!zonesVisibles) return null;
@@ -226,6 +258,17 @@
     var corps = h("div", { class: "cm-fiche-corps" });
     corps.appendChild(h("h3", { text: r.nom }));
     corps.appendChild(h("p", { class: "cm-fiche-meta", text: "Territoire · " + (cartes[r.carte] ? cartes[r.carte].nom : "") }));
+    var ici = races.filter(function (x) { return x.niveaux[r.id]; });
+    if (ici.length) {
+      corps.appendChild(h("p", { class: "cm-fiche-etiquette", text: "Races présentes" }));
+      var ul = h("ul", { class: "cm-fiche-races" });
+      ici.forEach(function (x) {
+        var contenu = [x.sprite ? h("img", { src: x.sprite, alt: "", width: "26", height: "31", loading: "lazy" }) : null,
+                       h("span", { text: x.nom + (NIVEAU[x.niveaux[r.id]] ? " (" + NIVEAU[x.niveaux[r.id]] + ")" : "") })];
+        ul.appendChild(h("li", {}, [x.lien ? h("a", { href: x.lien }, contenu) : h("span", { class: "cm-race-libre" }, contenu)]));
+      });
+      corps.appendChild(ul);
+    }
     var actions = h("p", { class: "cm-fiche-actions" });
     if (r.lien) actions.appendChild(h("a", { class: "cm-lien", href: r.lien, text: "Voir la page" }));
     corps.appendChild(actions);

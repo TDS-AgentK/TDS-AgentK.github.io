@@ -91,8 +91,6 @@
   [etiquette, dateJeu, lignes, reel].forEach(function (x) { haut.appendChild(x); });
   var blocLunes = el("div", { "class": "dj-lunes", "aria-label": "Les deux lunes de Vesperae" });
   haut.appendChild(blocLunes);
-  var jourLun = el("p", { "class": "dj-jourlunaire" });
-  haut.appendChild(jourLun);
 
   var outils = el("div", { "class": "dj-outils" });
 
@@ -158,7 +156,6 @@
   champReel.value = iso;
   champJour.value = j0.jour; champMois.value = j0.mois; champAnnee.value = j0.annee;
   majSens1(); majSens2();
-  if (lunesData) jourLun.textContent = "Jour lunaire n° " + jourLunaire(auj.getUTCMonth() + 1, auj.getUTCDate()).toLocaleString("fr-FR");
   lunes(auj.getUTCMonth() + 1, auj.getUTCDate()).forEach(function (x) {
     var fig = el("figure", { "class": "dj-lune" });
     if (x.image) fig.appendChild(el("img", { src: x.image, alt: "Lune " + x.nom + " : " + pctTexte(x.pct) + ", " + x.phase.toLowerCase(), width: "128", height: "130", loading: "lazy" }));
