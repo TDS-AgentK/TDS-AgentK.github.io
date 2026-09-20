@@ -1,0 +1,70 @@
+/* Théologie : liste des divinités et pages de divinité (complète fiches.css). */
+
+/* ---- Liste des divinités ------------------------------------------------------------------- */
+.dieux-grille { list-style: none; margin: 18px 0 40px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 24px; }
+.dieux-grille li { margin: 0; }
+.dieu-carte {
+  position: relative; display: flex; flex-direction: column; gap: 8px; height: 100%; padding: 14px 14px 16px; text-decoration: none; color: var(--encre);
+  background: linear-gradient(#f1e8ca, #dccf9f); box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 22px -8px rgba(30, 20, 4, .55);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.dieu-carte::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; border: 8px solid transparent;
+  border-image: url("/assets/img/panneau-parchemin.png") 8 / 8px repeat; image-rendering: pixelated;
+  mix-blend-mode: multiply; filter: grayscale(.45) sepia(.75) saturate(.55) brightness(.9) contrast(1.05);
+}
+.dieu-carte:hover, .dieu-carte:focus-visible { transform: translateY(-6px); box-shadow: 0 0 0 2px rgba(224, 184, 92, .6), 0 4px 6px rgba(0, 0, 0, .3), 0 20px 30px -8px rgba(30, 20, 4, .6); }
+.dieu-img { display: block; overflow: hidden; border: 3px solid rgba(255, 252, 240, .75); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .3), 0 2px 6px rgba(40, 25, 5, .4); background: #222; }
+.dieu-img img { display: block; width: 100%; height: auto; transition: transform .35s ease; }
+.dieu-carte:hover .dieu-img img { transform: scale(1.05); }
+.dieu-nom { font: 400 32px/1.05 var(--script); text-align: center; text-shadow: 1px 1px 0 rgba(255, 255, 255, .6); margin-top: 4px; }
+.dieu-attr { font: italic 13px/1.35 Georgia, serif; text-align: center; color: #4a3b1c; flex: 1; }
+.dieu-couleurs { display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center; font-size: 12px; }
+
+/* Pastilles de couleur */
+.couleur { display: inline-flex; align-items: center; gap: 5px; }
+.pastille { width: 12px; height: 12px; background: var(--pc, #999); border: 1px solid rgba(0, 0, 0, .65); box-shadow: 0 0 0 1px rgba(255, 255, 255, .55); }
+.couleurs { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 16px/1.3 Georgia, serif; }
+
+/* ---- Page d'une divinité --------------------------------------------------------------------- */
+.titre-dieu .sprites-titre { padding-bottom: 20px; }
+.titre-dieu .sprites-titre img { height: 72px; width: auto; max-width: 48px; image-rendering: pixelated; }
+.dieu-attributs { margin: -4px 0 26px !important; text-align: center !important; font: italic 18px/1.4 Georgia, serif; color: #5b4a25; }
+
+.dieu-intro p { font-size: 17px; line-height: 1.6; }
+.dieu-intro p:first-child::first-letter {
+  float: left; font: 400 3.4em/0.78 var(--script); padding: 8px 8px 0 0; color: #3b2a10; text-shadow: 1px 2px 3px rgba(70, 45, 10, .35);
+}
+.dieu-section { margin-top: 1.8em; }
+.dieu-section h2 { position: relative; margin: 0 0 .6em; padding-bottom: 8px; font-size: 34px; }
+.dieu-section h2::after {
+  content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, rgba(60, 40, 10, .55), transparent);
+}
+.dieu-affilees h3 { font-size: 24px; margin-top: 1.4em; }
+.dieu-illustration img { width: 100%; }
+
+/* Listes de lieux liés (colonne de droite) */
+.puces-lieux { list-style: none; margin: 0; padding: 0; }
+.puces-lieux li { margin: 0 0 5px; }
+.puces-lieux a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--encre); font-size: 14px; }
+.puces-lieux a:hover { text-decoration: underline; }
+.dieu-voisins img { height: 48px; width: auto; image-rendering: pixelated; filter: drop-shadow(0 2px 1px rgba(30, 20, 5, .5)); }
+
+/* Organisation des temples (bas de la liste) */
+.dieu-temples { position: relative; margin-top: 10px; padding: 26px 30px; background: linear-gradient(#efe6c7, #dccf9f); box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 22px -8px rgba(30, 20, 4, .5); }
+.dieu-temples::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border: 16px solid transparent;
+  border-image: url("/assets/img/panneau-parchemin.png") 8 / 16px repeat; image-rendering: pixelated;
+  mix-blend-mode: multiply; filter: grayscale(.45) sepia(.75) saturate(.55) brightness(.9) contrast(1.05);
+}
+.dieu-temples h2 { margin-top: 0; text-align: center; }
+.dieu-temples h3 { text-align: center; }
+.dieu-temples p { text-align: left; }
+
+@media (max-width: 800px) {
+  .dieux-grille { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .dieu-nom { font-size: 26px; }
+  .dieu-temples { padding: 22px 20px; }
+}
+@media (max-width: 420px) { .dieux-grille { grid-template-columns: 1fr; } }

@@ -1,0 +1,104 @@
+/* Histoire : frises chronologiques et pages d'événement (complète fiches.css). */
+
+/* ---- Outils de la frise ------------------------------------------------------------------------- */
+.frise { --pc: #888; }
+.frise-outils { display: flex; flex-direction: column; gap: 12px; align-items: center; margin: 6px 0 26px; }
+.frise-puces, .frise-onglets { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
+.frise-puces[hidden], .frise-recherche[hidden], .ev[hidden] { display: none; }
+.frise-puces button, .frise-onglets a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; font: 700 12px Helvetica, Arial, sans-serif; cursor: pointer; text-decoration: none;
+  color: #15110a; background: linear-gradient(rgba(255, 253, 240, .85), rgba(214, 198, 150, .6)); border: 1px solid rgba(60, 40, 10, .5); border-radius: 3px;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 3px rgba(0, 0, 0, .25); transition: transform .12s, box-shadow .12s;
+}
+.frise-puces button:hover, .frise-onglets a:hover, .frise-puces button:focus-visible, .frise-onglets a:focus-visible {
+  transform: translateY(-2px); box-shadow: inset 0 1px 0 #fff, 0 0 0 2px rgba(224, 184, 92, .55), 0 6px 10px -3px rgba(0, 0, 0, .35);
+}
+.frise-puces button[aria-pressed="true"], .frise-onglets a.actif {
+  color: #fff; background: linear-gradient(#7d7861, #57533f); text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, .45), inset 0 -2px 0 #e0b85c;
+}
+.frise-puces i.pt, .frise-onglets i.pt, .badge-chrono i.pt { background: var(--c, #888); }
+.frise-puces span { opacity: .7; font-weight: 400; }
+.frise-recherche {
+  width: min(420px, 100%); padding: 9px 12px; font: 14px Helvetica, Arial, sans-serif; color: #15110a; background: rgba(255, 255, 255, .55);
+  border: 1px solid rgba(60, 40, 10, .55); border-radius: 3px; box-shadow: inset 0 2px 4px rgba(60, 40, 10, .25);
+}
+.frise-recherche:focus { outline: 2px solid #e0b85c; }
+.frise-compteur { margin: 0 !important; font: italic 13px Georgia, serif; color: #5b4a25; text-align: center !important; }
+
+/* ---- La frise : une ligne verticale, une carte par événement ------------------------------------- */
+.frise-liste { list-style: none; margin: 0; padding: 0; position: relative; }
+.frise-liste::before { content: ""; position: absolute; left: calc(158px + var(--gout, 0px)); top: 0; bottom: 0; width: 3px; background: linear-gradient(rgba(60, 40, 10, 0), rgba(60, 40, 10, .55) 40px, rgba(60, 40, 10, .55) calc(100% - 40px), rgba(60, 40, 10, 0)); }
+.ev { position: relative; display: grid; grid-template-columns: 138px minmax(0, 1fr); column-gap: calc(42px + var(--gout, 0px)); margin: 0 0 16px; align-items: start; --c: #888; }
+.ev::before {
+  content: ""; position: absolute; left: calc(153px + var(--gout, 0px)); top: 20px; width: 12px; height: 12px; transform: rotate(45deg);
+  background: var(--c); border: 2px solid #23180a; box-shadow: 0 0 0 2px rgba(255, 255, 255, .7), 0 2px 5px rgba(0, 0, 0, .5);
+}
+.ev-date { padding-top: 14px; text-align: right; font: 700 15px/1.25 Georgia, "Times New Roman", serif; color: #3b2a10; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); }
+.ev-carte {
+  position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 12px 16px 12px 18px; text-decoration: none; color: var(--encre);
+  background: linear-gradient(rgba(255, 253, 240, .78), rgba(220, 205, 160, .62)); border: 1px solid rgba(60, 40, 10, .4); border-left: 6px solid var(--c);
+  border-radius: 3px; box-shadow: inset 0 1px 0 #fff, 0 2px 3px rgba(0, 0, 0, .25), 0 8px 16px -8px rgba(40, 25, 5, .45);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.ev-carte:hover, .ev-carte:focus-visible { transform: translateX(4px); box-shadow: inset 0 1px 0 #fff, 0 0 0 2px rgba(224, 184, 92, .5), 0 12px 20px -8px rgba(40, 25, 5, .55); }
+.ev-texte { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.ev-chrono { font: 700 11px Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--c); filter: brightness(.8); }
+.ev-titre { font: 400 22px/1.2 Georgia, "Times New Roman", serif; }
+.ev-extrait { font-size: 13.5px; line-height: 1.45; color: #3a2f18; }
+.ev-vignette { flex: none; width: 76px; height: 76px; object-fit: cover; border: 3px solid rgba(255, 252, 240, .8); box-shadow: 0 2px 5px rgba(40, 25, 5, .45); image-rendering: auto; }
+
+
+/* ---- Périodes : cartes distinctes + barres de durée à gauche de la ligne -------------------------------- */
+.frise { --gout: 0px; }
+.frise-annee { display: inline-flex; align-items: center; gap: 8px; font: 700 12px Helvetica, Arial, sans-serif; color: #4a3b1c; }
+.frise-annee[hidden], .frise-legende[hidden] { display: none; }
+.frise-annee input {
+  width: 130px; padding: 8px 10px; font: 14px Helvetica, Arial, sans-serif; color: #15110a; background: rgba(255, 255, 255, .55);
+  border: 1px solid rgba(60, 40, 10, .55); border-radius: 3px; box-shadow: inset 0 2px 4px rgba(60, 40, 10, .25);
+}
+.frise-annee input:focus { outline: 2px solid #e0b85c; }
+.frise-legende { margin: -6px 0 0 !important; font: italic 12px Georgia, serif; color: #6b5a2e; text-align: center !important; }
+.frise-corps { position: relative; }
+.frise-barres { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.barre {
+  position: absolute; width: 8px; min-height: 6px; border-radius: 4px; background: var(--c); border: 1px solid #23180a; cursor: help; pointer-events: auto;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .65), 1px 2px 4px rgba(0, 0, 0, .45);
+}
+.barre[hidden] { display: none; }
+.barre[data-ouvert]::after { content: ""; position: absolute; left: -1px; right: -1px; top: 100%; height: 30px; background: linear-gradient(var(--c), transparent); opacity: .8; border-radius: 0 0 4px 4px; }
+.ev-date b { display: block; font: 700 15px/1.25 Georgia, "Times New Roman", serif; }
+.ev-date small { display: block; margin-top: 2px; font: 600 11px/1.35 Helvetica, Arial, sans-serif; color: #6b5a2e; text-shadow: none; }
+.ev-tag { margin-left: 8px; padding: 1px 7px; font: 700 10px Helvetica, Arial, sans-serif; letter-spacing: .06em; color: #fff; background: var(--c); border-radius: 3px; vertical-align: 1px; }
+.ev-periode .ev-carte { border-left-width: 10px; }
+.ev-debut .ev-carte { box-shadow: inset 0 3px 0 var(--c), inset 0 1px 0 #fff, 0 2px 3px rgba(0, 0, 0, .25), 0 8px 16px -8px rgba(40, 25, 5, .45); }
+.ev-fin .ev-carte { background: linear-gradient(rgba(240, 232, 205, .78), rgba(205, 190, 145, .62)); box-shadow: inset 0 -3px 0 var(--c), inset 0 1px 0 #fff, 0 2px 3px rgba(0, 0, 0, .25), 0 8px 16px -8px rgba(40, 25, 5, .45); }
+.ev-periode::before { border-radius: 2px; }
+.badge-periode { background: linear-gradient(#efe6c7, #d6c894); color: #15110a; text-shadow: none; }
+
+/* ---- Page d'un événement ---------------------------------------------------------------------------- */
+.badge-date { background: linear-gradient(#efe6c7, #d6c894); color: #15110a; text-shadow: none; font: 700 13px Georgia, serif; }
+.badge-chrono { background: linear-gradient(var(--c, #57533f), #2a2415); text-decoration: none; }
+.badge-chrono:hover { filter: brightness(1.15); }
+.evenement .page-corps > p:first-of-type { font-size: 17px; line-height: 1.6; }
+.evenement .page-corps > p:first-of-type::first-letter {
+  float: left; font: 400 3.4em/0.78 var(--script); padding: 8px 8px 0 0; color: #3b2a10; text-shadow: 1px 2px 3px rgba(70, 45, 10, .35);
+}
+.proches { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.proches li { margin: 0 0 8px; }
+.proches a { display: block; text-decoration: none; color: var(--encre); padding: 3px 6px; border-left: 3px solid transparent; }
+.proches a:hover { background: rgba(255, 255, 255, .5); border-left-color: #e0b85c; }
+.pv-date { display: block; font: 700 11px Helvetica, Arial, sans-serif; letter-spacing: .06em; color: #6b5a2e; }
+.voisin-vide { flex: 1; }
+
+@media (max-width: 760px) {
+  .frise-barres, .frise-legende { display: none; }
+  .frise-liste::before { left: 9px; }
+  .ev { grid-template-columns: 1fr; padding-left: 30px; row-gap: 4px; }
+  .ev { column-gap: 0; }
+  .ev::before { left: 4px; top: 8px; }
+  .ev-date { text-align: left; padding-top: 0; }
+  .ev-vignette { width: 56px; height: 56px; }
+}
+
+@media (max-width: 900px) { .evenement .page-cote { order: 1; } }
