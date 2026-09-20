@@ -77,3 +77,17 @@
 
 /* ---- Redirection ---------------------------------------------------------------------------------------- */
 .redirection { text-align: center; padding: 40px 10px; }
+
+
+/* Calendrier : les deux lunes (Davos et Amarante) */
+.dj-lunes { display: flex; flex-wrap: wrap; gap: 14px 30px; justify-content: center; margin: 14px 0 2px; }
+.dj-lune { display: flex; align-items: center; gap: 12px; margin: 0; padding: 8px 16px 8px 8px; background: linear-gradient(#2a2233, #15111b); border: 2px solid #1c150a; border-radius: 4px; color: #f2ead2; box-shadow: 0 2px 5px rgba(0, 0, 0, .4); text-align: left; }
+.dj-lune img { display: block; width: 64px; height: auto; border-radius: 50%; background: #000; }
+.dj-lune figcaption { display: grid; gap: 1px; }
+.dj-lune strong { font: 400 26px/1.1 var(--script); color: #fff; }
+.dj-lune-pct { font: 700 20px Georgia, serif; color: #ffd889; }
+.dj-lune-phase { font: 12px Helvetica, Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #cfc4a4; }
+.dj-lunes-ligne { margin: 4px 0 0; font: 13px/1.4 Georgia, serif; color: #4a3b1c; text-align: left !important; }
+.dj-lunes-ligne:empty { display: none; }
+.dj-jourlunaire { margin: 8px 0 0 !important; font: italic 12px Georgia, serif; color: #6b5a2e; }
+.dj-jourlunaire:empty { display: none; }
