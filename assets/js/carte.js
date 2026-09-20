@@ -191,20 +191,31 @@
   });
   races.forEach(function (r) { choixRace.appendChild(h("option", { value: r.id, text: r.nom })); });
 
-  var NIVEAU = { principale: "principale", rare: "plus rare" };
+  var NIVEAU = { principale: "principale", secondaire: "secondaire", rare: "plus rare" };
+  var RANG = { principale: 0, presente: 1, secondaire: 2, rare: 3 };
   /* ---------- skins des races, posés sur la carte à leur emplacement ---------- */
   var skins = [];
   var solitaires = {};                                 // territoire -> skins sans emplacement précis (répartis au centre du territoire)
+  var parVille = {};                                   // lieu -> skins posés à côté de sa ville (rangés côte à côte)
   races.forEach(function (r) {
     if (!r.sprite) return;                             // groupe sans skin (ex. Shaamah) : présent dans les fiches seulement
     Object.keys(r.niveaux).forEach(function (k) {
       var z = parRoyaume[k];
       if (!z) return;
-      var pts = r.points && r.points[k];
-      var liste = pts && pts.length ? pts.map(function (p) { return { x: p[0], y: p[1], dx: 0 }; }) : null;
-      if (!liste) { (solitaires[k] = solitaires[k] || []).push({ r: r, z: z }); return; }
-      liste.forEach(function (p) { skins.push({ r: r, z: z, x: p.x, y: p.y, dx: 0 }); });
+      var villes = (r.lieux && r.lieux[k]) || [], pts = r.points && r.points[k], place = false;
+      villes.forEach(function (v) {
+        var id = typeof v === "string" ? v : v.id, l = parId[id];
+        if (!l || l.x == null) return;
+        (parVille[id] = parVille[id] || []).push({ r: r, z: z, x: l.x, y: l.y, niv: (typeof v === "string" ? null : v.niveau) || r.niveaux[k] });
+        place = true;
+      });
+      if (pts && pts.length) { pts.forEach(function (p) { skins.push({ r: r, z: z, x: p[0], y: p[1], dx: 0 }); }); place = true; }
+      if (!place) (solitaires[k] = solitaires[k] || []).push({ r: r, z: z });
     });
+  });
+  Object.keys(parVille).forEach(function (id) {
+    parVille[id].sort(function (a, b) { return (RANG[a.niv] === undefined ? 1 : RANG[a.niv]) - (RANG[b.niv] === undefined ? 1 : RANG[b.niv]); });      // les plus présents d'abord
+    parVille[id].forEach(function (s, i) { s.dx = 26 + i * 30; s.dy = 8; skins.push(s); });   // à droite du repère, pieds au niveau du repère
   });
   Object.keys(solitaires).forEach(function (k) {
     var lot = solitaires[k], et = etiquettes[k], cx = 50, cy = 50;
@@ -212,7 +223,7 @@
     lot.forEach(function (s, i) { skins.push({ r: s.r, z: s.z, x: cx, y: cy, dx: (i - (lot.length - 1) / 2) * 34, dy: 34 }); });
   });
   var elSkins = skins.map(function (s) {
-    var niv = NIVEAU[s.r.niveaux[s.z.id]];
+    var niv = NIVEAU[s.niv || s.r.niveaux[s.z.id]];
     var b = h("button", { type: "button", class: "cm-skin", "data-carte": s.z.carte, "data-race": s.r.id, "data-terr": s.z.id,
       style: "left:" + s.x + "%;top:" + s.y + "%;--dx:" + (s.dx || 0) + ";--dy:" + (s.dy || 0),
       title: s.r.nom + " — " + s.z.nom + (niv ? " (" + niv + ")" : ""), "aria-label": s.r.nom + ", " + s.z.nom }, [
@@ -340,7 +351,7 @@
 
   /* ---------- liste + filtres ---------- */
   var items = {};
-  lieux.slice().sort(function (a, b) { return a.nom.localeCompare(b.nom, "fr"); }).forEach(function (l) {
+  lieux.filter(function (l) { return !l.alias; }).sort(function (a, b) { return a.nom.localeCompare(b.nom, "fr"); }).forEach(function (l) {
     var b = h("button", { type: "button", class: "cm-item", "data-cat": l.cat }, [
       h("span", { class: "cm-point" }), h("span", { class: "cm-item-nom", text: l.nom }),
       l.x == null ? h("span", { class: "cm-item-note", text: "hors carte" }) : null,
@@ -398,8 +409,8 @@
     var n = 0;
     lieux.forEach(function (l) {
       var ok = visible(l);
-      if (ok) n++;
-      items[l.id].hidden = !ok;
+      if (ok && !l.alias) n++;
+      if (items[l.id]) items[l.id].hidden = !ok;
       if (reperes[l.id]) reperes[l.id].hidden = !ok || l.carte !== carte.id;
     });
     Array.prototype.forEach.call(puces.children, function (b) {
