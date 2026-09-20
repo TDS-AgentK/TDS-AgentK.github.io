@@ -209,7 +209,8 @@
     var majFrise = function () {
       var n = 0;
       evs.forEach(function (li, i) {
-        var ok = (chronoActive === "toutes" || li.getAttribute("data-chrono") === chronoActive) &&
+        var ok = (chronoActive === "toutes" || li.getAttribute("data-chrono") === chronoActive ||
+                   (" " + (li.getAttribute("data-aussi") || "") + " ").indexOf(" " + chronoActive + " ") !== -1) &&
                  (!requete || textes[i].indexOf(requete) !== -1) &&
                  (annee === null || couvre(li, annee));
         li.hidden = !ok;

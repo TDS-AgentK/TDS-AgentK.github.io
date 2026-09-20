@@ -1,0 +1,33 @@
+/* Page « Célébrations » : une carte de parchemin par célébration, avec sa date en pastille et son lieu.
+   Même bord pixellisé que les pages du Royaume des Rolands (royaume.css). */
+.celeb-intro { margin: 0 0 22px; text-align: center !important; font-style: italic; }
+.celebs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr)); gap: 22px; margin: 4px 0 30px; }
+.celeb {
+  position: relative; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; align-content: start; padding: 22px 24px 20px;
+  background: linear-gradient(#f1e8ca, #dccf9f); box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 22px -8px rgba(30, 20, 4, .55);
+}
+.celeb::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3; border: 8px solid transparent;
+  border-image: url("/assets/img/panneau-parchemin.png") 8 / 8px repeat; image-rendering: pixelated;
+  mix-blend-mode: multiply; filter: grayscale(.45) sepia(.75) saturate(.55) brightness(.9) contrast(1.05);
+}
+.celeb-icone { position: absolute; top: 14px; right: 16px; width: 34px; height: 34px; image-rendering: pixelated; opacity: .9; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .35)); }
+.celeb-titre { grid-column: 1 / -1; margin: 0 44px 8px 0; font: 400 30px/1.1 var(--script); color: #3b2a10; text-shadow: 1px 1px 0 rgba(255, 255, 255, .55), 1px 2px 3px rgba(70, 45, 10, .3); }
+.celeb-date {
+  grid-column: 1; grid-row: 2 / span 2; align-self: start; margin: 0; padding: 8px 14px 9px; min-width: 96px; text-align: center !important;
+  background: linear-gradient(#5b4a26, #3b2f14); color: #fff6d8; border: 2px solid #1c150a; box-shadow: 0 2px 3px rgba(0, 0, 0, .35);
+}
+.celeb-date .jour { display: block; font: 700 32px/1 Georgia, serif; text-shadow: 0 1px 1px #000; }
+.celeb-date .mois { display: block; margin-top: 2px; font: 700 12px Helvetica, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #ffd889; text-decoration: none; }
+.celeb-date .mois:hover, .celeb-date .mois:focus-visible { text-decoration: underline; }
+.celeb-date .an { display: block; margin-top: 3px; padding-top: 3px; border-top: 1px solid rgba(255, 246, 216, .35); font: 700 15px Georgia, serif; }
+.celeb-lieu { grid-column: 2; grid-row: 2; align-self: center; margin: 0; text-align: left !important; font-weight: 700; }
+.celeb-lieu span { margin-right: 4px; font: 700 11px Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #6b5a2e; }
+.celeb > p:not(.celeb-date):not(.celeb-lieu) { grid-column: 1 / -1; margin: 12px 0 0; font-size: 15px; line-height: 1.55; text-align: left !important; }
+.celeb .celeb-chrono { grid-column: 1 / -1; margin: 12px 0 0; font: 700 13px Helvetica, Arial, sans-serif; text-align: left !important; }
+@media (max-width: 480px) {
+  .celeb { grid-template-columns: 1fr; padding: 20px 18px 18px; }
+  .celeb-date, .celeb-lieu { grid-column: 1; grid-row: auto; }
+  .celeb-date { justify-self: start; }
+  .celeb-titre { font-size: 27px; }
+}
