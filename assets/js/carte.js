@@ -215,19 +215,19 @@
   });
   Object.keys(parVille).forEach(function (id) {
     parVille[id].sort(function (a, b) { return (RANG[a.niv] === undefined ? 1 : RANG[a.niv]) - (RANG[b.niv] === undefined ? 1 : RANG[b.niv]); });      // les plus présents d'abord
-    parVille[id].forEach(function (s, i) { s.dx = 26 + i * 30; s.dy = 8; skins.push(s); });   // à droite du repère, pieds au niveau du repère
+    parVille[id].forEach(function (s, i) { s.dx = 24 + i * 20; s.dy = 12; skins.push(s); });   // à droite du repère, pieds au niveau du repère
   });
   Object.keys(solitaires).forEach(function (k) {
     var lot = solitaires[k], et = etiquettes[k], cx = 50, cy = 50;
     if (et) { cx = parseFloat(et.style.left); cy = parseFloat(et.style.top) + 0; }
-    lot.forEach(function (s, i) { skins.push({ r: s.r, z: s.z, x: cx, y: cy, dx: (i - (lot.length - 1) / 2) * 34, dy: 34 }); });
+    lot.forEach(function (s, i) { skins.push({ r: s.r, z: s.z, x: cx, y: cy, dx: (i - (lot.length - 1) / 2) * 22, dy: 26 }); });
   });
   var elSkins = skins.map(function (s) {
     var niv = NIVEAU[s.niv || s.r.niveaux[s.z.id]];
     var b = h("button", { type: "button", class: "cm-skin", "data-carte": s.z.carte, "data-race": s.r.id, "data-terr": s.z.id,
       style: "left:" + s.x + "%;top:" + s.y + "%;--dx:" + (s.dx || 0) + ";--dy:" + (s.dy || 0),
       title: s.r.nom + " — " + s.z.nom + (niv ? " (" + niv + ")" : ""), "aria-label": s.r.nom + ", " + s.z.nom }, [
-      h("img", { src: s.r.sprite, alt: "", width: "34", height: "41", loading: "lazy", draggable: "false" }),
+      h("img", { src: s.r.sprite, alt: "", width: "20", height: "24", loading: "lazy", draggable: "false" }),
     ]);
     b.addEventListener("click", function (e) { e.stopPropagation(); ouvrirFicheRace(s.r); });
     monde.appendChild(b);
