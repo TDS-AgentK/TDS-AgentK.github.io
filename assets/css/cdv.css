@@ -1,0 +1,72 @@
+/* Carnets de Vesperae : bandeau d'édition, thèmes, podiums, tableaux et sommaire des textes. */
+.cdv-hero { margin: 0 0 20px; padding: 16px 20px; text-align: center; background: linear-gradient(#5b4a26, #3b2f14); color: #fff6d8; border: 2px solid #1c150a; box-shadow: 0 3px 6px rgba(0, 0, 0, .35); }
+.cdv-edition { margin: 0 0 8px; display: flex; align-items: center; justify-content: center; gap: 14px; font: 400 clamp(24px, 4.4vw, 36px)/1.1 var(--script); text-shadow: 0 2px 2px #000; text-align: center !important; }
+.cdv-edition img { width: 42px; height: auto; image-rendering: pixelated; flex: none; }
+.cdv-chiffres { margin: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: center; font: 13px Helvetica, Arial, sans-serif; letter-spacing: .04em; text-align: center !important; }
+.cdv-chiffres b { font: 700 24px Georgia, serif; color: #ffd889; margin-right: 4px; }
+.cdv-total-note { margin: 6px 0 0; font-size: 12px; color: #e0d3a4; text-align: center !important; }
+.cdv-statut { margin: 0 0 16px; padding: 10px 16px; text-align: center !important; font-weight: 700; background: #f3d77a; border: 2px solid #8a5a12; }
+.cdv-affiches { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 12px; margin: 0 0 20px; }
+.cdv-affiches figure { margin: 0; }
+.cdv-affiches img { display: block; width: 100%; height: auto; border: 3px solid #3b2a10; box-shadow: 0 4px 10px rgba(0, 0, 0, .4); }
+
+.cdv-themes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 16px; margin: 0 0 26px; }
+.cdv-theme, .cdv-podium, .cdv-bloc, .cdv-recompenses > div {
+  position: relative; background: linear-gradient(#f1e8ca, #dccf9f); box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 8px 18px -8px rgba(30, 20, 4, .55);
+  border: 2px solid #6b5220;
+}
+.cdv-theme { padding: 16px 20px; }
+.cdv-theme h3, .cdv-podium h3 { margin: 0 0 6px; font: 400 27px/1.15 var(--script); color: #3b2a10; text-shadow: 1px 1px 0 rgba(255, 255, 255, .55); }
+.cdv-desc { margin: 0 0 12px; font-size: 14px; font-style: italic; text-align: left !important; }
+.cdv-compteur p { margin: 4px 0 0; font-size: 13px; text-align: left !important; }
+.cdv-barre { display: block; height: 10px; background: rgba(60, 40, 10, .18); border: 1px solid rgba(60, 40, 10, .5); }
+.cdv-barre::before { content: ""; display: block; height: 100%; width: var(--p); background: linear-gradient(#e0b85c, #9a6a1a); }
+.cdv-etat.ok { color: #2d6b34; font-weight: 700; } .cdv-etat.non { color: #8a3a12; font-weight: 700; }
+
+.cdv-bloc { padding: 14px 22px; margin: 0 0 24px; }
+.cdv-bloc > *:first-child { margin-top: 0; } .cdv-bloc > *:last-child { margin-bottom: 0; }
+.cdv-bloc li { margin-bottom: 6px; }
+
+.cdv-palmares { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; margin: 0 0 8px; }
+.cdv-podium { padding: 14px 18px 16px; }
+.cdv-podium ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cdv-podium li { display: grid; grid-template-columns: auto auto 1fr auto; gap: 2px 10px; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, .45); border: 1px solid rgba(60, 40, 10, .4); border-left: 6px solid #8a5a12; }
+.cdv-podium li.cdv-or { border-left-color: #d8a520; background: rgba(255, 240, 180, .6); }
+.cdv-podium li.cdv-argent { border-left-color: #9aa0a8; } .cdv-podium li.cdv-bronze { border-left-color: #a8652a; }
+.cdv-podium img { width: 34px; height: 34px; image-rendering: pixelated; filter: drop-shadow(0 2px 1px rgba(0, 0, 0, .4)); }
+.cdv-rang { font: 700 16px Georgia, serif; min-width: 34px; }
+.cdv-id { font: 700 13px Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+.cdv-auteur { grid-column: 3; font-size: 14px; font-style: italic; }
+.cdv-podium li a { grid-column: 4; grid-row: 1 / span 2; font: 700 12px Helvetica, Arial, sans-serif; white-space: nowrap; }
+.cdv-jury, .cdv-merci, .cdv-note { text-align: center !important; font-size: 14px; }
+.cdv-note { font-style: italic; color: #5b4a25; }
+
+.cdv-table-cadre { overflow-x: auto; margin: 0 0 12px; border: 2px solid #6b5220; box-shadow: 0 2px 3px rgba(0, 0, 0, .3); background: rgba(255, 253, 240, .5); }
+.cdv-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cdv-table th, .cdv-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(60, 40, 10, .25); }
+.cdv-table thead th { background: #5b4a26; color: #fff6d8; font: 700 12px Helvetica, Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.cdv-table tbody th { font: 700 14px Georgia, serif; background: rgba(214, 199, 142, .45); white-space: nowrap; }
+.cdv-table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, .28); }
+.cdv-table .cdv-tr-theme th { background: #b8a468; color: #2a1c08; font: 700 15px Georgia, serif; text-transform: none; letter-spacing: 0; }
+.cdv-barre-cell { width: 26%; min-width: 90px; }
+.cdv-barre-vote { display: block; height: 12px; width: var(--p); min-width: 3px; background: linear-gradient(#e0b85c, #9a6a1a); border: 1px solid #5a3d0c; }
+.cdv-th-barre { width: 26%; }
+.cdv-sr { position: absolute; left: -9999px; }
+.cdv-bilan td:last-child { min-width: 240px; }
+
+.cdv-recompenses { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 14px; margin: 0 0 22px; }
+.cdv-recompenses > div { padding: 12px 18px 14px; }
+.cdv-recompenses dt { font: 700 12px Helvetica, Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #6b4a12; margin-bottom: 4px; }
+.cdv-recompenses dd { margin: 0; font-size: 14.5px; line-height: 1.5; }
+
+.cdv-pdf-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 0 0 16px; }
+.cdv-bouton { display: inline-block; padding: 10px 20px; font: 700 14px Helvetica, Arial, sans-serif; color: #fff; text-decoration: none; text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+  background: linear-gradient(#7d7861, #57533f); border: 1px solid #1c150a; border-radius: 3px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 2px 4px rgba(0, 0, 0, .35); }
+.cdv-bouton:hover { color: #fff; background: linear-gradient(#948d70, #665f47); }
+.cdv-bouton-2 { background: linear-gradient(#f0d58a, #c79a2a); color: #26231a; text-shadow: none; }
+.cdv-bouton-2:hover { color: #26231a; background: linear-gradient(#f7e2a5, #d6a82f); }
+@media (max-width: 560px) {
+  .cdv-podium li { grid-template-columns: auto 1fr; } .cdv-podium li a { grid-column: 2; grid-row: auto; }
+  .cdv-auteur { grid-column: 2; }
+  .cdv-edition img { width: 30px; }
+}

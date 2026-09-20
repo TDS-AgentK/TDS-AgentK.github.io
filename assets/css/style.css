@@ -307,6 +307,18 @@ figure img {
 .pied p { margin: 0 0 6px; }
 .pied a { color: #f0e6c4; margin: 0 8px; }
 .pied .copyright { color: #a9a18a; margin: 0; }
+.pied-recherche { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin: 0 0 14px; }
+.pied-recherche label { font: 700 12px Helvetica, Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #d6c78f; }
+.pied-recherche input[type="search"] {
+  width: min(280px, 100%); padding: 8px 11px; font: 14px Helvetica, Arial, sans-serif; color: #15110a;
+  background: #f3ecd4; border: 1px solid #1c150a; border-radius: 3px; box-shadow: inset 0 2px 3px rgba(60, 40, 10, .3);
+}
+.pied-recherche input[type="search"]:focus { outline: 2px solid #e0b85c; }
+.pied-recherche button {
+  padding: 8px 16px; font: 700 13px Helvetica, Arial, sans-serif; color: #26231a; cursor: pointer;
+  background: linear-gradient(#f0d58a, #c79a2a); border: 1px solid #1c150a; border-radius: 3px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
+}
+.pied-recherche button:hover { background: linear-gradient(#f7e2a5, #d6a82f); }
 
 /* ---- Mobile --------------------------------------------------------------------- */
 @media (max-width: 800px) {

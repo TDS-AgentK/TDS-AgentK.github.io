@@ -1,0 +1,27 @@
+/* Page « Recherche » : champ + liste de résultats avec extrait surligné. */
+.recherche-form { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 0 14px; }
+.recherche-form input[type="search"] {
+  flex: 1 1 280px; max-width: 520px; padding: 11px 14px; font: 16px Helvetica, Arial, sans-serif; color: #15110a;
+  background: rgba(255, 255, 255, .7); border: 1px solid rgba(60, 40, 10, .55); border-radius: 3px; box-shadow: inset 0 2px 4px rgba(60, 40, 10, .25);
+}
+.recherche-form input[type="search"]:focus { outline: 2px solid #e0b85c; }
+.recherche-form button, .rech-plus {
+  padding: 10px 20px; font: 700 14px Helvetica, Arial, sans-serif; color: #fff; cursor: pointer; text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+  background: linear-gradient(#7d7861, #57533f); border: 1px solid #1c150a; border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 2px 4px rgba(0, 0, 0, .35);
+}
+.recherche-form button:hover, .rech-plus:hover { background: linear-gradient(#948d70, #665f47); }
+.rech-etat { margin: 0 0 18px; text-align: center !important; font: italic 15px Georgia, serif; color: #5b4a25; }
+.rech-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.rech-resultat {
+  position: relative; padding: 14px 18px 12px; background: linear-gradient(rgba(255, 253, 240, .8), rgba(220, 205, 160, .55));
+  border: 1px solid rgba(60, 40, 10, .35); border-left: 5px solid #8a5a12; border-radius: 3px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+}
+.rech-resultat h2 { margin: 0 0 4px; padding: 0; border: 0; font: 700 19px Georgia, serif; text-align: left; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.rech-resultat h2::before, .rech-resultat h2::after { display: none; }
+.rech-type { font: 700 10px Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; color: #fff; background: #6b5a2e; border-radius: 2px; }
+.rech-extrait { margin: 0 0 4px; font-size: 14.5px; line-height: 1.5; text-align: left !important; }
+.rech-adresse { font: 12px Helvetica, Arial, sans-serif; color: #7a6a3e; word-break: break-all; }
+.rech-resultat mark { background: #f3d77a; color: inherit; padding: 0 1px; border-radius: 2px; }
+.rech-plus { display: block; margin: 18px auto 0; }
+.rech-plus[hidden] { display: none; }

@@ -122,3 +122,9 @@ a.courant-carte:hover, a.courant-carte:focus-visible { transform: translateY(-3p
 
 @media (max-width: 1000px) { .courants-liste li { flex-basis: calc((100% - 12px) / 2); } }
 @media (max-width: 620px) { .courants-liste li { flex-basis: 100%; } }
+
+/* Écoles : bandeau d'icônes pixel art (pack libre de droit) à la place des illustrations */
+.ecole-pixel { display: flex; align-items: center; justify-content: center; gap: 18px; height: auto; padding: 14px 10px; line-height: 0;
+  background: radial-gradient(ellipse at 50% 40%, #fbf5dc, #d6c894 75%); }
+.ecole-pixel img { width: 68px; height: 68px; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .4)); }
+@media (max-width: 800px) { .ecole-pixel img { width: 56px; height: 56px; } .ecole-pixel { gap: 12px; } }
