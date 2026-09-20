@@ -91,3 +91,42 @@
 .dj-lunes-ligne:empty { display: none; }
 .dj-jourlunaire { margin: 8px 0 0 !important; font: italic 12px Georgia, serif; color: #6b5a2e; }
 .dj-jourlunaire:empty { display: none; }
+
+/* Calendrier lunaire (fenêtre) */
+.dj-bouton-lunes { display: block; margin: 12px auto 2px; padding: 8px 18px; font: 700 13px Helvetica, Arial, sans-serif; color: #fff; cursor: pointer; text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+  background: linear-gradient(#5a4d7a, #2d2545); border: 1px solid #14101f; border-radius: 3px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 2px 4px rgba(0, 0, 0, .35); }
+.dj-bouton-lunes:hover { background: linear-gradient(#6d5f92, #38305a); }
+.lune-dialog { width: min(720px, calc(100vw - 24px)); max-height: calc(100vh - 24px); padding: 18px 22px 20px; overflow: auto; color: #f2ead2; text-align: left;
+  background: linear-gradient(#2a2233, #15111b); border: 3px solid #b48a3c; border-radius: 6px; box-shadow: 0 16px 50px rgba(0, 0, 0, .7); }
+.lune-dialog::backdrop { background: rgba(10, 8, 18, .72); }
+.lune-dialog h2 { margin: 0 34px 10px 0; padding: 0; border: 0; font: 400 38px/1.1 var(--script); color: #fff; text-align: left; }
+.lune-dialog h2::before, .lune-dialog h2::after { display: none; }
+.ld-fermer { position: absolute; right: 12px; top: 10px; width: 32px; height: 32px; font-size: 22px; line-height: 1; color: #fff; cursor: pointer; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .35); border-radius: 3px; }
+.ld-onglets { display: flex; gap: 6px; margin: 0 0 14px; }
+.ld-onglets button { flex: 1; padding: 8px 10px; font: 700 13px Helvetica, Arial, sans-serif; color: #cfc4a4; cursor: pointer; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .25); border-radius: 3px; }
+.ld-onglets button[aria-selected="true"] { color: #1c150a; background: linear-gradient(#f0d58a, #c79a2a); border-color: #1c150a; }
+.ld-panneau[hidden] { display: none; }
+.ld-intro { margin: 0 0 12px; font-size: 13px; font-style: italic; color: #cfc4a4; text-align: left !important; }
+.ld-type { margin: 0 0 12px; padding: 10px 14px; background: rgba(255, 255, 255, .06); border-left: 5px solid var(--c, #b48a3c); }
+.ld-pp { --c: #ffd889; } .ld-nn { --c: #7f8cff; } .ld-np { --c: #c0503f; } .ld-pn { --c: #9ed0d8; }
+.ld-type h3 { margin: 0; padding: 0; border: 0; font: 700 16px Georgia, serif; color: #fff; text-align: left; }
+.ld-detail { margin: 0 0 6px; font-size: 12px; color: #cfc4a4; text-align: left !important; }
+.ld-type ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.ld-type li { display: grid; grid-template-columns: 1fr auto; gap: 0 12px; align-items: baseline; font-size: 14px; }
+.ld-type li strong { color: #ffd889; } .ld-jeu { grid-column: 1; font-size: 12px; color: #cfc4a4; }
+.ld-type li em { grid-column: 2; grid-row: 1 / span 2; font-size: 12px; color: #cfc4a4; white-space: nowrap; }
+.ld-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; }
+.ld-nav button { width: 38px; height: 34px; font-size: 16px; color: #fff; cursor: pointer; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .35); border-radius: 3px; }
+.ld-mois-titre { display: grid; margin: 0; text-align: center !important; }
+.ld-mois-titre strong { font: 700 20px Georgia, serif; text-transform: capitalize; color: #fff; } .ld-mois-titre span { font-size: 13px; color: #ffd889; }
+.ld-grille { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.ld-jour-nom { padding: 2px 0; font: 700 10px Helvetica, Arial, sans-serif; letter-spacing: .06em; text-align: center; text-transform: uppercase; color: #cfc4a4; }
+.ld-case { min-height: 58px; padding: 3px 4px; display: flex; flex-direction: column; justify-content: space-between; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14); border-radius: 3px; }
+.ld-case b { font: 700 12px Georgia, serif; color: #f2ead2; }
+.ld-lunes { display: flex; gap: 2px; justify-content: center; }
+.ld-lunes img { width: 22px; height: 22px; border-radius: 50%; background: #000; }
+.ld-case.ld-auj { outline: 2px solid #fff; }
+.ld-case.ld-pp, .ld-case.ld-nn, .ld-case.ld-np, .ld-case.ld-pn { background: color-mix(in srgb, var(--c) 30%, transparent); border-color: var(--c); }
+.ld-legende { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: #cfc4a4; }
+.ld-pastille { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; background: var(--c); border-radius: 2px; }
+@media (max-width: 520px) { .lune-dialog { padding: 14px 12px 16px; } .ld-case { min-height: 50px; } .ld-lunes img { width: 18px; height: 18px; } .lune-dialog h2 { font-size: 32px; } }

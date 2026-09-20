@@ -1,0 +1,43 @@
+/* Pages d'accueil des menus « États de Vesperae » (cartes) et « Actualités » (à la une + frise). Générées par tools/creer_pages_accueil.py. */
+.l-intro { text-align: center !important; font-style: italic; margin: 0 0 22px; }
+.l-cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 18px; margin: 0 0 26px; }
+.l-carte { position: relative; padding: 0 18px 16px; background: linear-gradient(#f1e8ca, #dccf9f); box-shadow: 0 2px 3px rgba(0,0,0,.3), 0 8px 18px -8px rgba(30,20,4,.55); border: 2px solid #6b5220; display: flex; flex-direction: column; gap: 6px; }
+.l-bande { height: 12px; margin: 0 -18px 10px; background: var(--c); border-bottom: 2px solid #3b2a10; }
+.l-icone { position: absolute; top: 20px; right: 14px; width: 34px; height: 34px; image-rendering: pixelated; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+.l-carte h2, .l-carte h3 { margin: 0 44px 0 0; padding: 0; border: 0; font: 400 28px/1.15 var(--script); color: #3b2a10; text-shadow: 1px 1px 0 rgba(255,255,255,.55); text-align: left; }
+.l-carte h2::before, .l-carte h2::after { display: none; }
+.l-carte p { margin: 0; font-size: 14px; text-align: left !important; }
+.l-statut { align-self: flex-start; padding: 2px 9px; font: 700 11px Helvetica, Arial, sans-serif !important; letter-spacing: .06em; text-transform: uppercase; border-radius: 2px; color: #fff; }
+.l-statut.ok { background: #2d6b34; } .l-statut.att { background: #8a5a12; }
+.l-sous { margin: 0; padding-left: 18px; font-size: 14px; }
+.l-actions { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: auto !important; padding-top: 6px; }
+.l-bouton { display: inline-block; padding: 7px 16px; font: 700 13px Helvetica, Arial, sans-serif; color: #fff; text-decoration: none; text-shadow: 0 1px 1px rgba(0,0,0,.6); background: linear-gradient(#7d7861, #57533f); border: 1px solid #1c150a; border-radius: 3px; }
+.l-lien { font: 700 12px Helvetica, Arial, sans-serif; }
+.l-affiche { display: block; width: calc(100% + 36px); margin: 0 -18px 6px; height: auto; border-bottom: 2px solid #3b2a10; }
+.l-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 12px; margin: 0 0 20px; }
+.l-tuile { display: grid; gap: 2px; padding: 12px 16px; text-decoration: none; color: #15110a; background: rgba(255,253,240,.6); border: 1px solid rgba(60,40,10,.4); border-left: 6px solid #8a5a12; box-shadow: 0 2px 3px rgba(0,0,0,.2); }
+.l-tuile strong { font: 700 16px Georgia, serif; } .l-tuile span { font-size: 13px; color: #5b4a25; }
+.l-tuile:hover { background: #fff6d8; }
+.l-registre { max-width: 760px; margin: 0 auto 20px; padding: 6px 26px 18px; background: linear-gradient(rgba(255,253,240,.7), rgba(226,213,170,.55)); border: 2px solid #6b5220; box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+.l-registre h2 { margin: 18px 0 6px; padding: 0; border: 0; font: 400 30px/1.1 var(--script); text-align: left; }
+.l-registre h2::before, .l-registre h2::after { display: none; }
+.l-index { list-style: none; margin: 0; padding: 0; }
+.l-index > li { border-left: 5px solid var(--c); margin: 0 0 5px; padding: 3px 0 3px 12px; }
+.l-index a { display: flex; align-items: baseline; gap: 8px; text-decoration: none; color: #15110a; }
+.l-index a:hover .l-nom { text-decoration: underline; }
+.l-nom { font: 700 16px Georgia, serif; }
+.l-points { flex: 1; border-bottom: 2px dotted rgba(60,40,10,.45); transform: translateY(-3px); min-width: 20px; }
+.l-etat { font: 12px Helvetica, Arial, sans-serif; color: #6b5a2e; text-align: right; max-width: 55%; }
+.l-index ul { margin: 2px 0 4px; padding-left: 18px; font-size: 14px; }
+.l-une { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 0; margin: 0 0 22px; text-decoration: none; color: #15110a; background: linear-gradient(#f1e8ca, #dccf9f); border: 2px solid #6b5220; box-shadow: 0 4px 10px rgba(0,0,0,.35); }
+.l-une img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.l-une-texte { display: grid; gap: 6px; align-content: center; padding: 18px 22px; }
+.l-une-texte small { font: 700 11px Helvetica, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #8a5a12; }
+.l-une-texte strong { font: 400 34px/1.1 var(--script); }
+.l-chrono { list-style: none; margin: 0 0 22px; padding: 0 0 0 22px; border-left: 4px solid #8a5a12; display: grid; gap: 10px; }
+.l-chrono li { position: relative; }
+.l-chrono li::before { content: ""; position: absolute; left: -32px; top: 12px; width: 14px; height: 14px; transform: rotate(45deg); background: #e0b85c; border: 2px solid #3b2a10; }
+.l-chrono a { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 16px; align-items: baseline; padding: 10px 16px; text-decoration: none; color: #15110a; background: rgba(255,253,240,.6); border: 1px solid rgba(60,40,10,.4); }
+.l-chrono a:hover { background: #fff6d8; }
+.l-chrono b { font: 700 18px Georgia, serif; } .l-chrono em { font-size: 12px; color: #6b5a2e; }
+@media (max-width: 640px) { .l-une { grid-template-columns: 1fr; } .l-chrono a { grid-template-columns: 1fr; } .l-etat { max-width: 45%; } }

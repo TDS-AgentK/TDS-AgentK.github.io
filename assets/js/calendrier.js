@@ -173,4 +173,146 @@
   [champJour, champMois, champAnnee].forEach(function (c) { c.addEventListener("input", majSens2); });
   f1.addEventListener("submit", function (e) { e.preventDefault(); });
   f2.addEventListener("submit", function (e) { e.preventDefault(); });
+
+  // ---- calendrier lunaire (fenêtre) --------------------------------------------------------------------
+  // Prochaines « conjonctions » des deux lunes (double pleine lune, double nouvelle lune, nouvelle + pleine dans les deux sens)
+  // et vue mois par mois. Mêmes règles que les lunes du haut de page : pleine lune au-dessus de 95 %, nouvelle lune sous 6 %.
+  if (lunesData) {
+    var TYPES = [
+      { cle: "pp", titre: "Double pleine lune", detail: "Davos et Amarante sont pleines le même jour", a: "P", b: "P" },
+      { cle: "nn", titre: "Double nouvelle lune", detail: "Davos et Amarante sont nouvelles le même jour", a: "N", b: "N" },
+      { cle: "np", titre: "Davos nouvelle · Amarante pleine", detail: "Davos disparaît pendant qu'Amarante brille", a: "N", b: "P" },
+      { cle: "pn", titre: "Davos pleine · Amarante nouvelle", detail: "Davos brille pendant qu'Amarante disparaît", a: "P", b: "N" }
+    ];
+    function codePhase(x) { return x.phase === "Pleine lune" ? "P" : x.phase === "Nouvelle lune" ? "N" : ""; }
+    function lunesDuJour(d) {
+      var l = lunes(d.getMonth() + 1, d.getDate()), r = {};
+      l.forEach(function (x) { r[x.nom] = x; });
+      return r;
+    }
+    function typeDuJour(d) {
+      var r = lunesDuJour(d), a = r.Davos ? codePhase(r.Davos) : "", b = r.Amarante ? codePhase(r.Amarante) : "";
+      for (var i = 0; i < TYPES.length; i++) if (TYPES[i].a === a && TYPES[i].b === b) return TYPES[i].cle;
+      return "";
+    }
+    function midi(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12); }
+    function ajouterJours(d, n) { var x = midi(d); x.setDate(x.getDate() + n); return x; }
+    function dateCourte(d) { return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); }
+    function plage(deb, fin) {
+      if (deb.getTime() === fin.getTime()) return dateCourte(deb);
+      if (deb.getMonth() === fin.getMonth() && deb.getFullYear() === fin.getFullYear())
+        return "du " + deb.getDate() + " au " + fin.getDate() + " " + fin.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+      return "du " + dateCourte(deb) + " au " + dateCourte(fin);
+    }
+    function plageJeu(deb, fin) {
+      var a = enJeu(deb), b = enJeu(fin);
+      if (deb.getTime() === fin.getTime()) return quantieme(a.jour) + " " + mois[a.mois].nom + " " + a.annee;
+      return quantieme(a.jour) + " " + mois[a.mois].nom + " " + a.annee + " → " + quantieme(b.jour) + " " + mois[b.mois].nom + " " + b.annee;
+    }
+    function prochaines(aujourdhui) {
+      var res = {};
+      TYPES.forEach(function (ty) { res[ty.cle] = []; });
+      var courant = null;
+      for (var i = 0; i <= 800; i++) {
+        var d = ajouterJours(aujourdhui, i), ty = typeDuJour(d);
+        if (courant && courant.cle === ty && courant.fin.getTime() === ajouterJours(d, -1).getTime()) { courant.fin = d; continue; }
+        courant = ty ? { cle: ty, debut: d, fin: d } : null;
+        if (courant) res[ty].push(courant);
+      }
+      return res;
+    }
+
+    var dlg = el("dialog", { "class": "lune-dialog", "aria-labelledby": "ld-titre" });
+    var fermer = el("button", { type: "button", "class": "ld-fermer", "aria-label": "Fermer" }, "×");
+    var titreD = el("h2", { id: "ld-titre" }, "Calendrier lunaire");
+    var onglets = el("div", { "class": "ld-onglets", role: "tablist" });
+    var oListe = el("button", { type: "button", role: "tab", "aria-selected": "true" }, "Prochaines conjonctions");
+    var oMois = el("button", { type: "button", role: "tab", "aria-selected": "false" }, "Mois par mois");
+    onglets.appendChild(oListe); onglets.appendChild(oMois);
+    var pListe = el("div", { "class": "ld-panneau" });
+    var pMois = el("div", { "class": "ld-panneau", hidden: "hidden" });
+    [fermer, titreD, onglets, pListe, pMois].forEach(function (x) { dlg.appendChild(x); });
+    document.body.appendChild(dlg);
+
+    function afficherOnglet(liste) {
+      oListe.setAttribute("aria-selected", liste ? "true" : "false");
+      oMois.setAttribute("aria-selected", liste ? "false" : "true");
+      pListe.hidden = !liste; pMois.hidden = liste;
+    }
+    oListe.addEventListener("click", function () { afficherOnglet(true); });
+    oMois.addEventListener("click", function () { afficherOnglet(false); });
+    fermer.addEventListener("click", function () { dlg.close ? dlg.close() : dlg.removeAttribute("open"); });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg && dlg.close) dlg.close(); });
+
+    // -- liste des prochaines conjonctions
+    function remplirListe() {
+      pListe.innerHTML = "";
+      var auj0 = midi(new Date()), res = prochaines(auj0);
+      pListe.appendChild(el("p", { "class": "ld-intro" }, "À partir d'aujourd'hui (" + dateCourte(auj0) + "). Comme sur Chroniques du Temps, les phases se répètent à l'identique chaque année."));
+      TYPES.forEach(function (ty) {
+        var bloc = el("section", { "class": "ld-type ld-" + ty.cle });
+        bloc.appendChild(el("h3", null, ty.titre));
+        bloc.appendChild(el("p", { "class": "ld-detail" }, ty.detail));
+        var ul = el("ul");
+        res[ty.cle].slice(0, 4).forEach(function (r) {
+          var jours0 = Math.round((r.debut.getTime() - auj0.getTime()) / 86400000);
+          var li = el("li");
+          li.appendChild(el("strong", null, plage(r.debut, r.fin)));
+          li.appendChild(el("span", { "class": "ld-jeu" }, plageJeu(r.debut, r.fin)));
+          li.appendChild(el("em", null, jours0 === 0 ? "aujourd'hui" : jours0 === 1 ? "demain" : "dans " + jours0 + " jours"));
+          ul.appendChild(li);
+        });
+        if (!res[ty.cle].length) ul.appendChild(el("li", null, "Aucune dans les deux prochaines années."));
+        bloc.appendChild(ul);
+        pListe.appendChild(bloc);
+      });
+    }
+
+    // -- vue mois par mois
+    var moisAffiche = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    function remplirMois() {
+      pMois.innerHTML = "";
+      var an = moisAffiche.getFullYear(), m = moisAffiche.getMonth();
+      var nav = el("div", { "class": "ld-nav" });
+      var prec = el("button", { type: "button", "aria-label": "Mois précédent" }, "◂");
+      var suiv = el("button", { type: "button", "aria-label": "Mois suivant" }, "▸");
+      var enTete = el("p", { "class": "ld-mois-titre" });
+      var gj = enJeu(new Date(an, m, 15));
+      enTete.appendChild(el("strong", null, moisAffiche.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })));
+      enTete.appendChild(el("span", null, mois[gj.mois].nom + " " + gj.annee));
+      prec.addEventListener("click", function () { moisAffiche = new Date(an, m - 1, 1); remplirMois(); });
+      suiv.addEventListener("click", function () { moisAffiche = new Date(an, m + 1, 1); remplirMois(); });
+      nav.appendChild(prec); nav.appendChild(enTete); nav.appendChild(suiv);
+      pMois.appendChild(nav);
+      var grille = el("div", { "class": "ld-grille", role: "grid" });
+      for (var k = 1; k <= 7; k++) grille.appendChild(el("span", { "class": "ld-jour-nom" }, jours[k]));
+      var premier = new Date(an, m, 1), decal = (premier.getDay() || 7) - 1, nb = new Date(an, m + 1, 0).getDate();
+      for (var v = 0; v < decal; v++) grille.appendChild(el("span", { "class": "ld-vide" }));
+      var aujourdhui0 = midi(new Date());
+      for (var j = 1; j <= nb; j++) {
+        var d = new Date(an, m, j, 12), r = lunesDuJour(d), ty = typeDuJour(d);
+        var cell = el("div", { "class": "ld-case" + (ty ? " ld-" + ty : "") + (d.getTime() === aujourdhui0.getTime() ? " ld-auj" : ""), role: "gridcell" });
+        cell.appendChild(el("b", null, String(j)));
+        var lunesCell = el("span", { "class": "ld-lunes" });
+        ["Davos", "Amarante"].forEach(function (nom) {
+          if (!r[nom]) return;
+          lunesCell.appendChild(el("img", { src: r[nom].image, alt: nom + " " + pctTexte(r[nom].pct) + " (" + r[nom].phase.toLowerCase() + ")", title: nom + " : " + pctTexte(r[nom].pct) + " · " + r[nom].phase, width: "22", height: "22", loading: "lazy" }));
+        });
+        cell.appendChild(lunesCell);
+        if (ty) cell.setAttribute("title", TYPES.filter(function (x) { return x.cle === ty; })[0].titre);
+        grille.appendChild(cell);
+      }
+      pMois.appendChild(grille);
+      var leg = el("ul", { "class": "ld-legende" });
+      TYPES.forEach(function (ty) { var li = el("li"); li.appendChild(el("i", { "class": "ld-pastille ld-" + ty.cle })); li.appendChild(document.createTextNode(ty.titre)); leg.appendChild(li); });
+      pMois.appendChild(leg);
+    }
+
+    var ouvrir = el("button", { type: "button", "class": "dj-bouton-lunes" }, "Calendrier lunaire : prochaines conjonctions");
+    ouvrir.addEventListener("click", function () {
+      remplirListe(); remplirMois(); afficherOnglet(true);
+      if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "open");
+    });
+    haut.appendChild(ouvrir);
+  }
 })();
