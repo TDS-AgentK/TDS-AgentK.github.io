@@ -63,3 +63,5 @@
 .qz-rate { display: grid; gap: 2px; margin: 0 0 10px; padding: 10px 14px; background: rgba(255,255,255,.45); border-left: 5px solid #a23a2c; font-size: 14px; }
 .qz-rate strong { font: 700 15px Georgia, serif; } .qz-vous { color: #a23a2c; } .qz-juste { color: #2d6b34; font-weight: 700; } .qz-expl { font-style: italic; color: #5b4a25; }
 @media (max-width: 560px) { .qz-jeu, .qz-fin { padding: 14px 14px 18px; } .qz-question { font-size: 18px; } .qz-fin h2 { font-size: 36px; } .qz-carte { grid-template-columns: 1fr; } .qz-carte img { grid-row: auto; } .qz-carte p { grid-column: 1; } }
+
+.qz-quand { margin: 0 0 6px !important; text-align: center !important; font: 700 13px Helvetica, Arial, sans-serif; letter-spacing: .04em; color: #6b4a12; }

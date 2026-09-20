@@ -119,6 +119,10 @@
       carte.appendChild(anneau);
       carte.appendChild(el("p", { "class": "qz-etiquette" }, z.titre));
       carte.appendChild(el("h2", null, r.nom));
+      var maintenant = new Date();
+      var quand = maintenant.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " à " +
+                  maintenant.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", " h ");
+      carte.appendChild(el("p", { "class": "qz-quand" }, quand.charAt(0).toUpperCase() + quand.slice(1)));
       carte.appendChild(el("p", { "class": "qz-bilan" }, score + " bonne" + (score > 1 ? "s" : "") + " réponse" + (score > 1 ? "s" : "") + " sur " + qs.length + ". " + r.texte));
       if (pct > avant && avant) carte.appendChild(el("p", { "class": "qz-record-neuf" }, "Nouveau record personnel ! (précédent : " + avant + " %)"));
       var actions = el("p", { "class": "qz-actions" });
@@ -126,14 +130,33 @@
       rejouer.addEventListener("click", function () { jouer(z); });
       var autres = el("button", { type: "button", "class": "qz-autre" }, "Autres quiz");
       autres.addEventListener("click", accueil);
-      var copier = el("button", { type: "button", "class": "qz-autre" }, "Copier mon résultat");
+      var lien = location.href.split("#")[0];
+      var jour = quand.charAt(0).toUpperCase() + quand.slice(1);
+      var markdown = "**Quiz du Temple du Savoir : " + z.titre + "**" + "\n\n" +
+        "- Score : **" + score + "/" + qs.length + "** (" + pct + " %)" + "\n" +
+        "- Rang : **" + r.nom + "**" + "\n" +
+        "- Niveau : " + z.niveau + "\n" +
+        "- Date : " + jour + "\n\n" +
+        "Jouez aussi : " + lien;
+      var copier = el("button", { type: "button", "class": "qz-autre" }, "Copier (Markdown)");
       copier.addEventListener("click", function () {
-        var t = "Quiz du Temple du Savoir : « " + z.titre + " » : " + score + "/" + qs.length + " (" + pct + " %) — " + r.nom + " — " + location.href.split("#")[0];
-        var ok = function () { copier.textContent = "Résultat copié ✓"; };
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, function () { window.prompt("Copiez votre résultat :", t); });
-        else window.prompt("Copiez votre résultat :", t);
+        var ok = function () { copier.textContent = "Markdown copié ✓"; };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(markdown).then(ok, function () { window.prompt("Copiez votre résultat :", markdown); });
+        else window.prompt("Copiez votre résultat :", markdown);
       });
-      [rejouer, autres, copier].forEach(function (b) { actions.appendChild(b); });
+      var image = el("button", { type: "button", "class": "qz-autre" }, "Copier l'image");
+      image.addEventListener("click", function () {
+        image.disabled = true;
+        creerImage(z, score, qs.length, pct, r, quand, rates.length).then(function (blob) {
+          var nom = "quiz-tds-" + z.id + ".png";
+          if (navigator.clipboard && window.ClipboardItem) {
+            var attente = new Promise(function (ok, ko) { setTimeout(function () { ko(new Error("délai")); }, 4000); });      // certains navigateurs n'affichent jamais la demande d'autorisation
+            return Promise.race([navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]), attente]).then(function () { image.textContent = "Image copiée ✓"; }, function () { telecharger(blob, nom); image.textContent = "Image téléchargée ✓"; });
+          }
+          telecharger(blob, nom); image.textContent = "Image téléchargée ✓";
+        }).catch(function () { image.textContent = "Image indisponible"; }).then(function () { image.disabled = false; });
+      });
+      [rejouer, autres, copier, image].forEach(function (b) { actions.appendChild(b); });
       carte.appendChild(actions);
       if (rates.length) {
         var rev = el("div", { "class": "qz-revision" });
@@ -153,6 +176,41 @@
       carte.scrollIntoView({ block: "nearest" });
     }
     question();
+  }
+  function telecharger(blob, nom) {
+    var u = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = u; a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 2000);
+  }
+  // Image du résultat (PNG créé dans le navigateur, rien n'est envoyé sur Internet).
+  function creerImage(z, score, total, pct, r, quand, nbRates) {
+    var police = document.fonts && document.fonts.load ? document.fonts.load('40px "Pinyon Script"', "Quiz") : Promise.resolve();
+    return police.catch(function () {}).then(function () {
+      var W = 900, H = 640, c = document.createElement("canvas"); c.width = W; c.height = H;
+      var x = c.getContext("2d");
+      var fond = x.createLinearGradient(0, 0, 0, H); fond.addColorStop(0, "#f1e8ca"); fond.addColorStop(1, "#d9ca96");
+      x.fillStyle = fond; x.fillRect(0, 0, W, H);
+      x.strokeStyle = "#6b5220"; x.lineWidth = 8; x.strokeRect(4, 4, W - 8, H - 8);
+      x.strokeStyle = "#b48a3c"; x.lineWidth = 2; x.strokeRect(18, 18, W - 36, H - 36);
+      x.textAlign = "center"; x.fillStyle = "#6b4a12"; x.font = "700 20px Helvetica, Arial, sans-serif";
+      x.fillText("QUIZ DU TEMPLE DU SAVOIR", W / 2, 66);
+      x.fillStyle = "#2b1d07"; x.font = '54px "Pinyon Script", "Snell Roundhand", cursive';
+      x.fillText(z.titre, W / 2, 130);
+      // jauge
+      var cx = W / 2, cy = 290, R = 92;
+      x.lineWidth = 22; x.strokeStyle = "rgba(60,40,10,.2)"; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
+      x.strokeStyle = "#8a5a12"; x.lineCap = "round"; x.beginPath(); x.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct / 100); x.stroke();
+      x.fillStyle = "#2b1d07"; x.font = "700 48px Georgia, serif"; x.fillText(pct + " %", cx, cy + 4);
+      x.font = "700 20px Georgia, serif"; x.fillStyle = "#5b4a25"; x.fillText(score + " / " + total, cx, cy + 36);
+      x.fillStyle = "#2b1d07"; x.font = '58px "Pinyon Script", "Snell Roundhand", cursive'; x.fillText(r.nom, W / 2, 452);
+      x.fillStyle = "#5b4a25"; x.font = "italic 20px Georgia, serif";
+      var mots = r.texte.split(" "), ligne = "", y = 490;
+      mots.forEach(function (m) { var essai = ligne ? ligne + " " + m : m; if (x.measureText(essai).width > W - 160) { x.fillText(ligne, W / 2, y); y += 26; ligne = m; } else ligne = essai; });
+      x.fillText(ligne, W / 2, y);
+      x.fillStyle = "#3b2a10"; x.font = "700 18px Helvetica, Arial, sans-serif"; x.fillText(quand, W / 2, 566);
+      x.fillStyle = "#8a7a55"; x.font = "15px Helvetica, Arial, sans-serif"; x.fillText("templedusavoir.net  ·  " + z.niveau, W / 2, 596);
+      return new Promise(function (ok, ko) { c.toBlob(function (b) { b ? ok(b) : ko(); }, "image/png"); });
+    });
   }
   accueil();
 })();
