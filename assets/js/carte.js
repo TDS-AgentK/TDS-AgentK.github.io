@@ -94,7 +94,7 @@
   /* ---------- état ---------- */
   var carte = null, W = 1, H = 1, s = 1, tx = 0, ty = 0, vw = 0, vh = 0;
   var sMin = 0.1, sMax = 2;
-  var selection = null, filtreCat = "toutes", requete = "", royaumeChoisi = null, zonesVisibles = false, raceChoisie = null;
+  var selection = null, filtreCat = "toutes", requete = "", royaumeChoisi = null, zonesVisibles = false, raceChoisie = null, skinsVisibles = true;
   var anim = null, actif = false;
 
   function mesurer() { vw = vue.clientWidth; vh = vue.clientHeight; }
@@ -190,7 +190,66 @@
     listeRoyaumes.appendChild(itemsRoyaumes[r.id]);
   });
   races.forEach(function (r) { choixRace.appendChild(h("option", { value: r.id, text: r.nom })); });
+
   var NIVEAU = { principale: "principale", rare: "plus rare" };
+  /* ---------- skins des races, posés sur la carte à leur emplacement ---------- */
+  var skins = [];
+  var solitaires = {};                                 // territoire -> skins sans emplacement précis (répartis au centre du territoire)
+  races.forEach(function (r) {
+    if (!r.sprite) return;                             // groupe sans skin (ex. Shaamah) : présent dans les fiches seulement
+    Object.keys(r.niveaux).forEach(function (k) {
+      var z = parRoyaume[k];
+      if (!z) return;
+      var pts = r.points && r.points[k];
+      var liste = pts && pts.length ? pts.map(function (p) { return { x: p[0], y: p[1], dx: 0 }; }) : null;
+      if (!liste) { (solitaires[k] = solitaires[k] || []).push({ r: r, z: z }); return; }
+      liste.forEach(function (p) { skins.push({ r: r, z: z, x: p.x, y: p.y, dx: 0 }); });
+    });
+  });
+  Object.keys(solitaires).forEach(function (k) {
+    var lot = solitaires[k], et = etiquettes[k], cx = 50, cy = 50;
+    if (et) { cx = parseFloat(et.style.left); cy = parseFloat(et.style.top) + 0; }
+    lot.forEach(function (s, i) { skins.push({ r: s.r, z: s.z, x: cx, y: cy, dx: (i - (lot.length - 1) / 2) * 34, dy: 34 }); });
+  });
+  var elSkins = skins.map(function (s) {
+    var niv = NIVEAU[s.r.niveaux[s.z.id]];
+    var b = h("button", { type: "button", class: "cm-skin", "data-carte": s.z.carte, "data-race": s.r.id, "data-terr": s.z.id,
+      style: "left:" + s.x + "%;top:" + s.y + "%;--dx:" + (s.dx || 0) + ";--dy:" + (s.dy || 0),
+      title: s.r.nom + " — " + s.z.nom + (niv ? " (" + niv + ")" : ""), "aria-label": s.r.nom + ", " + s.z.nom }, [
+      h("img", { src: s.r.sprite, alt: "", width: "34", height: "41", loading: "lazy", draggable: "false" }),
+    ]);
+    b.addEventListener("click", function (e) { e.stopPropagation(); ouvrirFicheRace(s.r); });
+    monde.appendChild(b);
+    return { el: b, s: s };
+  });
+  function majSkins() {
+    elSkins.forEach(function (o) {
+      o.el.hidden = !skinsVisibles || !carte || o.s.z.carte !== carte.id;
+      o.el.classList.toggle("hors-race", !!raceChoisie && raceChoisie.id !== o.s.r.id);
+      o.el.classList.toggle("de-race", !!raceChoisie && raceChoisie.id === o.s.r.id);
+    });
+  }
+  function ouvrirFicheRace(r) {
+    fiche.innerHTML = "";
+    var fermer = bouton("×", "Fermer la fiche", "cm-fermer");
+    fermer.addEventListener("click", fermerFiche);
+    var corps = h("div", { class: "cm-fiche-corps" });
+    corps.appendChild(h("h3", { text: r.nom }));
+    corps.appendChild(h("p", { class: "cm-fiche-meta", text: "Race · présente dans " + Object.keys(r.niveaux).length + " territoire" + (Object.keys(r.niveaux).length > 1 ? "s" : "") }));
+    var ul = h("ul", { class: "cm-fiche-races" });
+    Object.keys(r.niveaux).forEach(function (k) {
+      var z = parRoyaume[k];
+      ul.appendChild(h("li", {}, [h("span", { class: "cm-race-libre", text: (z ? z.nom : k) + (NIVEAU[r.niveaux[k]] ? " (" + NIVEAU[r.niveaux[k]] + ")" : "") })]));
+    });
+    corps.appendChild(ul);
+    var actions = h("p", { class: "cm-fiche-actions" });
+    if (r.lien) actions.appendChild(h("a", { class: "cm-lien", href: r.lien, text: "Voir la fiche de la race" }));
+    corps.appendChild(actions);
+    fiche.appendChild(fermer);
+    fiche.appendChild(corps);
+    fiche.hidden = false;
+    fiche.scrollTop = 0;
+  }
   function majRace() {
     var r = raceChoisie;
     Object.keys(zones).forEach(function (k) {
@@ -200,6 +259,7 @@
       if (etiquettes[k]) etiquettes[k].classList.toggle("hors-race", !!r && !de);
       if (itemsRoyaumes[k]) itemsRoyaumes[k].classList.toggle("hors-race", !!r && !de);
     });
+    majSkins();
     infoRace.innerHTML = "";
     infoRace.hidden = !r;
     if (!r) return;
@@ -312,6 +372,18 @@
     puceZones.addEventListener("click", function () { afficherZones(!zonesVisibles); });
     puces.appendChild(puceZones);
   }
+  var puceSkins = null;
+  if (races.length) {
+    puceSkins = h("button", { type: "button", class: "cm-puce cm-puce-skins", "aria-pressed": "true", title: "Afficher ou masquer les personnages des races" }, [
+      h("span", { class: "cm-point cm-point-skin" }), h("span", { text: "Skins des races" }),
+    ]);
+    puceSkins.addEventListener("click", function () {
+      skinsVisibles = !skinsVisibles;
+      puceSkins.setAttribute("aria-pressed", skinsVisibles ? "true" : "false");
+      majSkins();
+    });
+    puces.appendChild(puceSkins);
+  }
 
   function visible(l) {
     if (selection === l.id) return true;
@@ -331,7 +403,7 @@
       if (reperes[l.id]) reperes[l.id].hidden = !ok || l.carte !== carte.id;
     });
     Array.prototype.forEach.call(puces.children, function (b) {
-      if (b === puceZones) return;
+      if (b === puceZones || b === puceSkins) return;
       b.setAttribute("aria-pressed", b.getAttribute("data-cat") === filtreCat ? "true" : "false");
     });
     compteur.textContent = n + (n > 1 ? " lieux" : " lieu");
@@ -371,6 +443,7 @@
         if (e.tagName.toLowerCase() === "path") e.style.display = ici ? "" : "none"; else e.hidden = !ici;
       });
       Array.prototype.forEach.call(listeRoyaumes.children, function (li) { li.hidden = li.firstChild.getAttribute("data-carte") !== carte.id; });
+      majSkins();
       if (apres) apres();
     };
     if (change) {
@@ -449,13 +522,13 @@
     vue.addEventListener(nomEv, function (e) { e.preventDefault(); });
   });
   vue.addEventListener("mousedown", function (e) {
-    if (e.button === 0 && !e.target.closest(".cm-repere")) {
+    if (e.button === 0 && !e.target.closest(".cm-repere, .cm-skin")) {
       e.preventDefault();
       try { vue.focus({ preventScroll: true }); } catch (err) { vue.focus(); }
     }
   });
   vue.addEventListener("pointerdown", function (e) {
-    if (e.target.closest(".cm-repere") || (e.button !== undefined && e.button > 0)) return;
+    if (e.target.closest(".cm-repere, .cm-skin") || (e.button !== undefined && e.button > 0)) return;
     actif = true;
     try { vue.setPointerCapture(e.pointerId); } catch (err) { /* ignoré */ }
     pointeurs[e.pointerId] = { x: e.clientX, y: e.clientY };
