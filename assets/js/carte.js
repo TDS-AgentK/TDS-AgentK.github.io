@@ -2,6 +2,7 @@
 // Données : <script type="application/json" id="donnees-carte"> (générées depuis data/lieux.json).
 // Fonctions : déplacer (glisser), zoomer (Ctrl + molette, pincement, boutons, double-clic), repères par
 // catégorie, recherche, filtres, fiche du lieu, plusieurs cartes, lien direct (#lieu=nom), plein écran.
+// Zones des royaumes : polygones dessinés (data/royaumes.json), affichés avec la puce « Zones des royaumes ».
 // Mode édition : ajouter ?edition à l'adresse ; un clic sur la carte copie les coordonnées du point.
 (function () {
   "use strict";
@@ -48,14 +49,23 @@
   var compteur = h("p", { class: "cm-compteur", "aria-live": "polite" });
   var liste = h("ul", { class: "cm-liste" });
   var noms = h("input", { type: "checkbox", id: "cm-noms" });
+  var listeRoyaumes = h("ul", { class: "cm-royaumes-liste", hidden: "" });
   var menu = h("div", { class: "cm-menu" }, [
-    champ, puces,
+    champ, puces, listeRoyaumes,
     h("label", { class: "cm-option", for: "cm-noms" }, [noms, h("span", { text: " Afficher les noms sur la carte" })]),
     compteur, liste,
   ]);
 
   var img = h("img", { class: "cm-img", alt: "", draggable: "false" });
+  var royaumes = data.royaumes || [];
+  var NS = "http://www.w3.org/2000/svg";
+  var calque = document.createElementNS(NS, "svg");
+  calque.setAttribute("class", "cm-royaumes");
+  calque.setAttribute("viewBox", "0 0 100 100");
+  calque.setAttribute("preserveAspectRatio", "none");
+  calque.setAttribute("aria-hidden", "true");
   var monde = h("div", { class: "cm-monde" }, [img]);
+  monde.appendChild(calque);
   var vue = h("div", { class: "cm-vue", tabindex: "0", role: "application",
     "aria-label": "Carte interactive. Flèches pour se déplacer, plus et moins pour zoomer." }, [monde]);
 
@@ -79,7 +89,7 @@
   /* ---------- état ---------- */
   var carte = null, W = 1, H = 1, s = 1, tx = 0, ty = 0, vw = 0, vh = 0;
   var sMin = 0.1, sMax = 2;
-  var selection = null, filtreCat = "toutes", requete = "";
+  var selection = null, filtreCat = "toutes", requete = "", royaumeChoisi = null, zonesVisibles = false;
   var anim = null, actif = false;
 
   function mesurer() { vw = vue.clientWidth; vh = vue.clientHeight; }
@@ -143,6 +153,88 @@
     monde.appendChild(b);
   });
 
+  /* ---------- zones des royaumes ---------- */
+  var zones = {}, etiquettes = {}, itemsRoyaumes = {}, parRoyaume = {}, puceZones = null;
+  royaumes.forEach(function (r) {
+    parRoyaume[r.id] = r;
+    var d = r.points.map(function (p, i) { return (i ? "L" : "M") + p[0] + " " + p[1]; }).join(" ") + " Z";
+    var chemin = document.createElementNS(NS, "path");
+    chemin.setAttribute("d", d);
+    chemin.setAttribute("class", "cm-territoire");
+    chemin.setAttribute("data-id", r.id);
+    chemin.setAttribute("data-carte", r.carte);
+    chemin.setAttribute("style", "--c:" + r.couleur);
+    calque.appendChild(chemin);
+    zones[r.id] = chemin;
+    // étiquette au centre de gravité du polygone
+    var A = 0, cx = 0, cy = 0, n = r.points.length;
+    for (var i = 0; i < n; i++) {
+      var a = r.points[i], b = r.points[(i + 1) % n], c = a[0] * b[1] - b[0] * a[1];
+      A += c; cx += (a[0] + b[0]) * c; cy += (a[1] + b[1]) * c;
+    }
+    if (A) { cx /= 3 * A; cy /= 3 * A; } else { cx = r.points[0][0]; cy = r.points[0][1]; }
+    if (r.etiquette) { cx = r.etiquette[0]; cy = r.etiquette[1]; }              // position choisie à la main (facultatif)
+    var et = h("span", { class: "cm-terr-nom", "data-carte": r.carte, style: "left:" + cx.toFixed(2) + "%;top:" + cy.toFixed(2) + "%;--c:" + r.couleur, text: r.nom, "aria-hidden": "true" });
+    monde.appendChild(et);
+    etiquettes[r.id] = et;
+    var bt = h("button", { type: "button", class: "cm-royaume-btn", "data-carte": r.carte, style: "--c:" + r.couleur }, [h("span", { class: "cm-carre" }), h("span", { text: r.nom })]);
+    bt.addEventListener("click", function () { choisirRoyaume(r.id); });
+    bt.addEventListener("mouseenter", function () { zones[r.id].classList.add("survol"); });
+    bt.addEventListener("mouseleave", function () { zones[r.id].classList.remove("survol"); });
+    itemsRoyaumes[r.id] = h("li", {}, [bt]);
+    listeRoyaumes.appendChild(itemsRoyaumes[r.id]);
+  });
+  function afficherZones(oui) {
+    zonesVisibles = oui;
+    racine.classList.toggle("cm-avec-royaumes", oui);
+    listeRoyaumes.hidden = !oui;
+    if (puceZones) puceZones.setAttribute("aria-pressed", oui ? "true" : "false");
+    if (!oui && royaumeChoisi) fermerFiche();
+  }
+  function royaumeSous(e) {
+    if (!zonesVisibles) return null;
+    var c = document.elementFromPoint(e.clientX, e.clientY);
+    var z = c && c.closest ? c.closest(".cm-territoire") : null;
+    return z ? parRoyaume[z.getAttribute("data-id")] : null;
+  }
+  function choisirRoyaume(id, opts) {
+    var r = parRoyaume[id];
+    if (!r) return;
+    opts = opts || {};
+    var suite = function () {
+      if (!zonesVisibles) afficherZones(true);
+      if (selection && reperes[selection]) reperes[selection].classList.remove("choisi");
+      selection = null;
+      Object.keys(zones).forEach(function (k) { zones[k].classList.toggle("choisi", k === id); });
+      royaumeChoisi = id;
+      Array.prototype.forEach.call(liste.querySelectorAll(".cm-item"), function (b) { b.classList.remove("actif"); });
+      var xs = r.points.map(function (p) { return p[0]; }), ys = r.points.map(function (p) { return p[1]; });
+      var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+      var largeur = (x1 - x0) / 100 * W, hauteur = (y1 - y0) / 100 * H, large = vw >= 640;
+      var ns = bornes(Math.min((vw * (large ? 0.55 : 0.9)) / largeur, (vh * (large ? 0.85 : 0.5)) / hauteur), sMin, sMax);
+      var cible = pointCible();
+      aller(ns, cible.x - ((x0 + x1) / 2 / 100) * W * ns, cible.y - ((y0 + y1) / 2 / 100) * H * ns, opts.instantane ? 0 : 600);
+      ouvrirFicheRoyaume(r);
+      try { history.replaceState(null, "", "#royaume=" + id); } catch (e) { /* ignoré */ }
+    };
+    if (r.carte && carte.id !== r.carte) changerCarte(r.carte, true, suite); else suite();
+  }
+  function ouvrirFicheRoyaume(r) {
+    fiche.innerHTML = "";
+    var fermer = bouton("×", "Fermer la fiche", "cm-fermer");
+    fermer.addEventListener("click", fermerFiche);
+    var corps = h("div", { class: "cm-fiche-corps" });
+    corps.appendChild(h("h3", { text: r.nom }));
+    corps.appendChild(h("p", { class: "cm-fiche-meta", text: "Territoire · " + (cartes[r.carte] ? cartes[r.carte].nom : "") }));
+    var actions = h("p", { class: "cm-fiche-actions" });
+    if (r.lien) actions.appendChild(h("a", { class: "cm-lien", href: r.lien, text: "Voir la page" }));
+    corps.appendChild(actions);
+    fiche.appendChild(fermer);
+    fiche.appendChild(corps);
+    fiche.hidden = false;
+    fiche.scrollTop = 0;
+  }
+
   /* ---------- liste + filtres ---------- */
   var items = {};
   lieux.slice().sort(function (a, b) { return a.nom.localeCompare(b.nom, "fr"); }).forEach(function (l) {
@@ -170,6 +262,13 @@
   }
   puce("toutes", "Tous");
   data.categories.forEach(function (c) { puce(c.id, c.nom); });
+  if (royaumes.length) {
+    puceZones = h("button", { type: "button", class: "cm-puce cm-puce-zones", "aria-pressed": "false", title: "Afficher ou masquer les territoires des royaumes" }, [
+      h("span", { class: "cm-carre" }), h("span", { text: "Zones des royaumes" }),
+    ]);
+    puceZones.addEventListener("click", function () { afficherZones(!zonesVisibles); });
+    puces.appendChild(puceZones);
+  }
 
   function visible(l) {
     if (selection === l.id) return true;
@@ -189,6 +288,7 @@
       if (reperes[l.id]) reperes[l.id].hidden = !ok || l.carte !== carte.id;
     });
     Array.prototype.forEach.call(puces.children, function (b) {
+      if (b === puceZones) return;
       b.setAttribute("aria-pressed", b.getAttribute("data-cat") === filtreCat ? "true" : "false");
     });
     compteur.textContent = n + (n > 1 ? " lieux" : " lieu");
@@ -221,7 +321,15 @@
       b.classList.toggle("actif", on);
       b.setAttribute("aria-selected", on ? "true" : "false");
     });
-    var fin = function () { mesurer(); toutVoir(0); appliquerFiltres(); if (apres) apres(); };
+    var fin = function () {
+      mesurer(); toutVoir(0); appliquerFiltres();
+      Array.prototype.forEach.call(monde.querySelectorAll(".cm-territoire, .cm-terr-nom"), function (e) {
+        var ici = e.getAttribute("data-carte") === carte.id;
+        if (e.tagName.toLowerCase() === "path") e.style.display = ici ? "" : "none"; else e.hidden = !ici;
+      });
+      Array.prototype.forEach.call(listeRoyaumes.children, function (li) { li.hidden = li.firstChild.getAttribute("data-carte") !== carte.id; });
+      if (apres) apres();
+    };
     if (change) {
       racine.classList.add("cm-charge");
       img.onload = function () { racine.classList.remove("cm-charge"); fin(); };
@@ -237,6 +345,7 @@
     if (!l) return;
     opts = opts || {};
     if (selection && reperes[selection]) reperes[selection].classList.remove("choisi");
+    if (royaumeChoisi) { zones[royaumeChoisi].classList.remove("choisi"); royaumeChoisi = null; }
     selection = id;
     var afficher = function () {
       if (reperes[id]) reperes[id].classList.add("choisi");
@@ -278,6 +387,7 @@
   }
   function fermerFiche() {
     if (selection && reperes[selection]) reperes[selection].classList.remove("choisi");
+    if (royaumeChoisi) { zones[royaumeChoisi].classList.remove("choisi"); royaumeChoisi = null; }
     selection = null;
     fiche.hidden = true;
     Array.prototype.forEach.call(liste.querySelectorAll(".cm-item"), function (b) { b.classList.remove("actif"); });
@@ -291,6 +401,16 @@
     var r = vue.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   }
+  // Ni sélection de texte/d'image ni « glisser-déposer » de l'image pendant qu'on déplace la carte.
+  ["selectstart", "dragstart"].forEach(function (nomEv) {
+    vue.addEventListener(nomEv, function (e) { e.preventDefault(); });
+  });
+  vue.addEventListener("mousedown", function (e) {
+    if (e.button === 0 && !e.target.closest(".cm-repere")) {
+      e.preventDefault();
+      try { vue.focus({ preventScroll: true }); } catch (err) { vue.focus(); }
+    }
+  });
   vue.addEventListener("pointerdown", function (e) {
     if (e.target.closest(".cm-repere") || (e.button !== undefined && e.button > 0)) return;
     actif = true;
@@ -323,10 +443,23 @@
     if (!pointeurs[e.pointerId]) return;
     delete pointeurs[e.pointerId];
     if (Object.keys(pointeurs).length < 2) pincement = null;
-    if (glisse && !glisse.bouge && e.type === "pointerup" && EDITION) coordonnees(e);
+    if (glisse && !glisse.bouge && e.type === "pointerup") {
+      var zr = royaumeSous(e);
+      if (zr) choisirRoyaume(zr.id); else if (EDITION) coordonnees(e);
+    }
     if (!Object.keys(pointeurs).length) { glisse = null; vue.classList.remove("deplace"); }
   }
   vue.addEventListener("pointerup", finGeste);
+  vue.addEventListener("mousemove", function (e) {
+    if (!zonesVisibles || glisse) return;
+    var zr = royaumeSous(e);
+    Object.keys(zones).forEach(function (k) { zones[k].classList.toggle("survol", !!zr && zr.id === k); });
+    vue.classList.toggle("sur-territoire", !!zr);
+  });
+  vue.addEventListener("mouseleave", function () {
+    Object.keys(zones).forEach(function (k) { zones[k].classList.remove("survol"); });
+    vue.classList.remove("sur-territoire");
+  });
   vue.addEventListener("pointercancel", finGeste);
   vue.addEventListener("dblclick", function (e) {
     if (e.target.closest(".cm-repere")) return;
@@ -419,6 +552,8 @@
   function depuisAdresse() {
     var m = /#lieu=([\w-]+)/.exec(location.hash);
     if (m && parId[m[1]] && selection !== m[1]) choisir(m[1], { instantane: true });
+    var z = /#royaume=([\w-]+)/.exec(location.hash);
+    if (z && parRoyaume[z[1]] && royaumeChoisi !== z[1]) choisirRoyaume(z[1], { instantane: true });
   }
   window.addEventListener("hashchange", depuisAdresse);
 

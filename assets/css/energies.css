@@ -1,0 +1,51 @@
+/* Page « Proportions et énergies magiques » : un camembert par race, dans des cartes de parchemin (même bord pixellisé que les fiches). */
+.energie-intro, .energie-cartes, .energie-types { --e-mana: #2b62a3; --e-tenebre: #4b2a66; --e-vitale: #a23a2c; --e-monstre: #c26a1a; }
+.energie-intro { display: grid; gap: 12px; margin: 0 0 22px; }
+.energie-intro p {
+  margin: 0; padding: 14px 20px; text-align: left !important; line-height: 1.55;
+  background: linear-gradient(rgba(255, 253, 240, .78), rgba(220, 205, 160, .55)); border: 1px solid rgba(60, 40, 10, .35); border-left: 6px solid #8a5a12; border-radius: 3px;
+}
+.energie-intro .e-mana { border-left-color: var(--e-mana); }
+.energie-intro .e-duo { border-image: linear-gradient(var(--e-vitale), var(--e-tenebre)) 1; border-image-width: 0 0 0 6px; border-left: 6px solid transparent; }
+.energie-intro .e-or { border-left-color: #b8862a; }
+
+.energie-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 10px; margin: 0 0 26px; }
+.energie-type { display: grid; grid-template-columns: auto 1fr; gap: 0 10px; align-items: center; padding: 10px 14px; background: rgba(255, 253, 240, .6); border: 1px solid rgba(60, 40, 10, .4); box-shadow: 0 2px 3px rgba(0, 0, 0, .18); }
+.energie-type i, .energie-legende i {
+  display: inline-block; width: 14px; height: 14px; transform: rotate(45deg); border: 1px solid #23180a; box-shadow: 0 0 0 1px rgba(255, 255, 255, .6); background: var(--c);
+}
+.energie-type strong { font: 700 15px Georgia, serif; }
+.energie-type span { grid-column: 2; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #6b5a2e; }
+.e-mana { --c: var(--e-mana); } .e-tenebre { --c: var(--e-tenebre); } .e-vitale { --c: var(--e-vitale); } .e-monstre { --c: var(--e-monstre); }
+
+.energie-cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 22px; margin: 4px 0 18px; }
+.energie-carte {
+  position: relative; padding: 16px 20px 14px; display: flex; flex-direction: column; gap: 8px;
+  background: linear-gradient(#f1e8ca, #dccf9f); box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 22px -8px rgba(30, 20, 4, .55);
+}
+.energie-carte::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3; border: 8px solid transparent;
+  border-image: url("/assets/img/panneau-parchemin.png") 8 / 8px repeat; image-rendering: pixelated;
+  mix-blend-mode: multiply; filter: grayscale(.45) sepia(.75) saturate(.55) brightness(.9) contrast(1.05);
+}
+.energie-carte header { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(60, 40, 10, .3); padding-bottom: 6px; }
+.energie-carte h3 { margin: 0; font: 400 32px/1.1 var(--script); color: #3b2a10; text-shadow: 1px 1px 0 rgba(255, 255, 255, .55), 1px 2px 3px rgba(70, 45, 10, .3); }
+.energie-sprites { display: flex; gap: 2px; margin: -6px 0 -8px; flex: none; }
+.energie-sprites img { width: 34px; height: auto; image-rendering: pixelated; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .35)); }
+.energie-corps { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.camembert { flex: none; width: 128px; height: 128px; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .35)); }
+.camembert .part { stroke: #23180a; stroke-width: 1.1; stroke-linejoin: round; fill: var(--c); }
+.camembert .e-mana { --c: var(--e-mana); } .camembert .e-tenebre { --c: var(--e-tenebre); }
+.camembert .e-vitale { --c: var(--e-vitale); } .camembert .e-monstre { --c: var(--e-monstre); }
+.camembert .part.vide { fill: #d3c79f; stroke-dasharray: 4 3; }
+.camembert .brillance { fill: url(#brillance-camembert); pointer-events: none; }
+.camembert text { fill: #fff8e0; stroke: rgba(20, 12, 2, .8); stroke-width: 2.2; paint-order: stroke; font: 700 8.5px Georgia, serif; }
+.camembert .part.vide + text { fill: #5a4a20; stroke: none; }
+.energie-legende { flex: 1 1 150px; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.energie-legende li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: 14px; }
+.energie-legende b { font: 700 15px Georgia, serif; }
+.energie-legende .nul { opacity: .45; }
+.energie-note { margin: 0; text-align: left !important; font-size: 14px; font-style: italic; }
+.energie-fiche { align-self: flex-start; margin-top: auto; font: 700 13px Helvetica, Arial, sans-serif; }
+.energie-zero { margin: 8px 0 20px; font-style: italic; }
+@media (max-width: 480px) { .energie-carte h3 { font-size: 28px; } .camembert { width: 112px; height: 112px; } }
