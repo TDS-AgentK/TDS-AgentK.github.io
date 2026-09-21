@@ -1,0 +1,123 @@
+/* Pages « Personnages » : annuaire et fiches (encart de dialogue vert, citations parchemin, badges de classe). */
+
+/* ---------- Encart de dialogue vert (reprend celui du jeu ; le nom de la carte est dans l'encart, en bas à droite) ---------- */
+.dlg { margin: 14px 0; max-width: 640px; }
+.dlg-box {
+  position: relative; background: linear-gradient(#4a795a, #083418);
+  box-shadow: inset 0 0 0 1px #f7fbff, inset 0 0 0 4px #a5d3ff, inset 0 0 0 5px #181c18, 0 2px 4px rgba(0, 0, 0, .4);
+  padding: 10px 14px 11px; color: #fff; font: 16px/1.35 Arial, Helvetica, sans-serif; text-align: left;
+}
+.dlg-box + .dlg-box { margin-top: 3px; }
+.dlg-box p { margin: 0; text-align: left; hyphens: none; }
+.dlg.c .dlg-box:last-child { padding-bottom: 24px; }
+.dlg-carte { position: absolute; right: 12px; bottom: 5px; font: 700 10.5px Helvetica, Arial, sans-serif; letter-spacing: .05em; text-transform: uppercase; color: #a5d3ff; }
+.dlg-box.suite::after { content: "\25BC"; position: absolute; right: 12px; bottom: 6px; font-size: 10px; color: #a5d3ff; }
+
+/* ---------- Citations du lore TDS : effet parchemin ---------- */
+.quote-tds {
+  position: relative; margin: 26px 0; padding: 26px 34px 24px 52px; max-width: 700px; color: #2b1d07;
+  background: var(--grain), linear-gradient(90deg, rgba(90, 55, 10, .35), transparent 5%, transparent 95%, rgba(90, 55, 10, .35)), linear-gradient(#f2e8c6, #e2d4a4);
+  box-shadow: 0 4px 10px -4px rgba(30, 20, 4, .6);
+}
+.quote-tds::before { content: "\201C"; position: absolute; left: 12px; top: 0; font: 400 72px/1 Georgia, serif; color: #8a5a12; opacity: .75; }
+.quote-tds p { margin: 0; font: italic 17px/1.5 Georgia, serif; text-align: left; hyphens: none; }
+.quote-tds .src { margin-top: 10px; font: 700 11.5px Helvetica, Arial, sans-serif; letter-spacing: .05em; text-transform: uppercase; color: #6b4a12; }
+.quote-tds .src::before { content: "Lore TDS · "; color: #8a5a12; }
+.quote-tds .src a { color: inherit; }
+/* rouleau (fiches longues) : extrémités enroulées */
+.quote-tds.rouleau::after, .quote-tds.rouleau > .e {
+  content: ""; position: absolute; left: -6px; right: -6px; height: 14px; border-radius: 7px;
+  background: linear-gradient(#b48a3c, #e9cf8a 45%, #8a5a12); box-shadow: 0 2px 3px rgba(0, 0, 0, .4);
+}
+.quote-tds.rouleau::after { bottom: -10px; }
+.quote-tds.rouleau > .e { top: -10px; }
+/* bandeau sobre (fiches courtes) */
+.quote-tds.simple { margin: 16px 0; padding: 12px 18px 12px 50px; box-shadow: inset 4px 0 0 #8a5a12; background: rgba(255, 255, 255, .35); }
+.quote-tds.simple::before { font-size: 54px; left: 10px; top: 2px; }
+
+/* ---------- Badges de classe ---------- */
+.p-classe { display: inline-block; padding: 3px 12px; font: 700 12px Helvetica, Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; border: 2px solid #3b2a10; color: #3b2a10; }
+.p-classe.c1 { background: radial-gradient(circle at 35% 30%, #fff1b8, #e0b85c 60%, #b98a2c); }
+.p-classe.c2 { background: linear-gradient(#e3e6e9, #b4bcc4); }
+.p-classe.c3 { background: linear-gradient(#e8dcc3, #cbb891); border-style: dashed; }
+
+/* ---------- Portrait (médaillon avec l'initiale tant qu'il n'y a pas d'image) ---------- */
+.p-portrait { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.p-portrait img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.p-portrait.mono { font: 400 64px/1 var(--script), Georgia, serif; color: #6b4a12; text-shadow: 1px 1px 0 rgba(255, 255, 255, .5); background: radial-gradient(circle at 35% 30%, #fbf1cf, #e0cf98 70%); }
+
+/* ---------- Fiche : bandeau, colonne de gauche, onglets ---------- */
+.p-apercu { margin: 0 0 12px; padding: 8px 12px; background: #fff3c4; border: 2px solid #b3771a; font: 700 14px Helvetica, Arial, sans-serif; text-align: left; }
+.p-hero { display: grid; grid-template-columns: 210px 1fr; margin: 4px 0 0; background: linear-gradient(135deg, #3b2f14, #1d1b14 70%); color: #fff6d8; border: 2px solid #6b5220; }
+.p-hero .p-portrait { min-height: 250px; border-right: 2px solid #6b5220; }
+.p-hero.court { grid-template-columns: 130px 1fr; }
+.p-hero.court .p-portrait { min-height: 150px; }
+.p-hero-txt { padding: 20px 26px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.p-lieu { font: 700 11.5px Helvetica, Arial, sans-serif; letter-spacing: .07em; text-transform: uppercase; color: #6b4a12; }
+.p-hero .p-lieu { color: #ffd889; }
+.p-hero h1 { margin: 0; padding: 0; text-align: left; font: 400 52px/1 var(--script), Georgia, serif; color: #fff6d8; text-shadow: 0 2px 3px #000; }
+.p-hero h1::before, .p-hero h1::after { display: none; }
+.p-titre-perso { margin: 0; font: 700 14px Helvetica, Arial, sans-serif; color: #e8dcae; text-align: left; }
+.p-accroche { margin: 4px 0 8px; font: italic 17px/1.4 Georgia, serif; color: #e8dcae; max-width: 560px; text-align: left; hyphens: none; }
+.p-accroche a, .p-hero a { color: #ffd889; }
+.p-corps { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; margin-top: 16px; align-items: start; }
+.p-lateral .cadre-fiche { margin-bottom: 16px; }
+.p-faits { margin: 0; padding: 0; font-size: 14px; }
+.p-faits div { display: grid; grid-template-columns: 78px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(60, 40, 10, .25); }
+.p-faits dt { font: 700 11px Helvetica, Arial, sans-serif; text-transform: uppercase; letter-spacing: .06em; color: #6b4a12; padding-top: 2px; }
+.p-faits dd { margin: 0; }
+.p-liens h4 { margin: 12px 0 4px; font: 700 11px Helvetica, Arial, sans-serif; text-transform: uppercase; letter-spacing: .07em; color: #6b4a12; }
+.p-liste-liens { list-style: none; margin: 0; padding: 0; }
+.p-liste-liens li { margin: 0 0 3px; }
+.p-liste-liens .pv-date { display: block; font-size: 11.5px; color: #6b4a12; }
+.lien-lore { text-decoration-style: dotted; text-decoration-thickness: 2px; text-decoration-color: #b3771a; }
+.p-principal h2.c:first-child { margin-top: 0; }
+.p-principal h3 { margin-top: 1.2em; }
+/* onglets : sans JavaScript tous les panneaux se lisent à la suite */
+.p-onglets { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 3px solid #6b5220; margin-bottom: 14px; }
+.p-onglets[hidden] { display: none; }
+.p-onglets button { font: 700 13px Helvetica, Arial, sans-serif; letter-spacing: .05em; text-transform: uppercase; padding: 9px 16px; border: 2px solid #6b5220; border-bottom: 0; background: #cbb891; color: #3b2a10; cursor: pointer; }
+.p-onglets button[aria-selected="true"] { background: #f1e8ca; position: relative; top: 3px; }
+.p-onglets button:hover { background: #ddcda1; }
+.p-onglets button:focus-visible { outline: 3px solid #b3771a; outline-offset: 2px; }
+.p-js .p-titre-panneau { display: none; }
+.p-js .p-panneau[hidden] { display: none; }
+.p-frise { list-style: none; margin: 0; padding: 0 0 0 20px; border-left: 4px solid #8a5a12; }
+.p-frise li { position: relative; margin: 0 0 18px; padding-left: 16px; }
+.p-frise li::before { content: ""; position: absolute; left: -30px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: #e0b85c; border: 3px solid #3b2a10; }
+.p-frise .date { font: 700 15px Georgia, serif; color: #6b4a12; }
+.p-frise .flou .date { font-style: italic; }
+.p-retour small { color: #6b4a12; }
+
+/* ---------- Annuaire ---------- */
+.p-legende { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; }
+.p-filtres { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 16px; }
+.p-filtres button { font: 700 12px Helvetica, Arial, sans-serif; letter-spacing: .05em; text-transform: uppercase; padding: 6px 12px; border: 2px solid #6b5220; background: #e5d9b1; color: #3b2a10; cursor: pointer; }
+.p-filtres button.on { background: #6b5220; color: #fff6d8; }
+.p-grands { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap: 18px; }
+.p-grande { display: grid; grid-template-columns: 110px 1fr; background: linear-gradient(#f6eed2, #dccf9f); border: 2px solid #8a5a12; box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 22px -8px rgba(30, 20, 4, .55); }
+.p-grande .p-portrait { min-height: 150px; border-right: 2px solid #8a5a12; }
+.p-grande .in { padding: 12px 16px; }
+.p-grande h3 { margin: 6px 0 2px; padding: 0; border: 0; font: 400 32px/1.05 var(--script), Georgia, serif; }
+.p-grande p { margin: 4px 0 0; font-size: 14px; text-align: left; hyphens: none; }
+.p-plus { display: block; margin-top: 8px; font: 700 12px Helvetica, Arial, sans-serif; color: #6b4a12; }
+.p-moyens { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; }
+.p-moyenne { padding: 10px 14px 12px; background: linear-gradient(#f1e8ca, #dccf9f); border: 2px solid #6b5220; box-shadow: 0 2px 3px rgba(0, 0, 0, .3); }
+.p-moyenne h4 { margin: 4px 0 2px; font-size: 17px; }
+.p-moyenne p { margin: 2px 0 0; font-size: 13.5px; text-align: left; hyphens: none; }
+.p-anecdotes { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+.p-anecdotes th, .p-anecdotes td { padding: 6px 10px; border-bottom: 1px solid rgba(60, 40, 10, .3); text-align: left; vertical-align: top; }
+.p-anecdotes th { background: #d9c890; font: 700 11.5px Helvetica, Arial, sans-serif; text-transform: uppercase; letter-spacing: .05em; }
+.p-anecdotes tbody tr:nth-child(even) td { background: rgba(255, 255, 255, .28); }
+[data-l][hidden] { display: none !important; }
+
+@media (max-width: 760px) {
+  .p-hero, .p-hero.court, .p-corps { grid-template-columns: 1fr; }
+  .p-hero .p-portrait { min-height: 110px; border-right: 0; border-bottom: 2px solid #6b5220; }
+  .p-hero h1 { font-size: 42px; }
+  .p-anecdotes { display: block; overflow-x: auto; }
+}
+
+/* ---------- Fiche en cours d'approbation ---------- */
+.p-approbation { margin: 0 0 12px; padding: 9px 14px; background: #e3edf9; border: 2px solid #3f6f8a; border-left-width: 8px; font-size: 14.5px; text-align: left; hyphens: none; }
+.p-tag { display: inline-block; margin-left: 6px; padding: 0 8px; border: 1px solid #3f6f8a; border-radius: 9px; background: #e3edf9; color: #24485c; font: 700 10.5px Helvetica, Arial, sans-serif; letter-spacing: .04em; text-transform: uppercase; vertical-align: middle; }
