@@ -11,7 +11,7 @@
       var ouvert = liste.classList.toggle("ouvert");
       bouton.setAttribute("aria-expanded", ouvert ? "true" : "false");
     });
-    liste.querySelectorAll("li.a-sous-menu").forEach(function (li) {
+    liste.querySelectorAll("li.a-sous-menu, li.a-sous-sous").forEach(function (li) {
       var fleche = document.createElement("button");
       fleche.type = "button";
       fleche.className = "sm-fleche";
@@ -22,7 +22,7 @@
         var ouvert = li.classList.toggle("ouvert");
         fleche.setAttribute("aria-expanded", ouvert ? "true" : "false");
       });
-      li.insertBefore(fleche, li.querySelector(".sous-menu"));
+      li.insertBefore(fleche, li.querySelector(".sous-menu, .sous-sous-menu"));
     });
   }
 

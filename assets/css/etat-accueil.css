@@ -1,0 +1,24 @@
+/* Page d'accueil d'un État de Vesperae (même modèle pour tous). Générée par etats_site.py à partir de data/etats.json. */
+.ea-etat { position: relative; padding: 0 22px 18px; margin: 0 0 22px; background: linear-gradient(#f1e8ca, #dccf9f); border: 2px solid #6b5220; box-shadow: 0 2px 3px rgba(0,0,0,.3), 0 8px 18px -8px rgba(30,20,4,.55); display: flex; flex-direction: column; gap: 10px; }
+.ea-etat .l-bande { height: 12px; margin: 0 -22px 8px; background: var(--c); border-bottom: 2px solid #3b2a10; }
+.ea-etat .l-icone { top: 26px; right: 18px; }
+.ea-accroche { margin: 0 44px 0 0; font-size: 16px; line-height: 1.5; text-align: left !important; }
+.ea-accroche.vide { font-style: italic; color: #5b4a25; }
+.ea-fiche { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: 8px 22px; margin: 4px 0 0; padding-top: 12px; border-top: 1px dotted rgba(60,40,10,.5); }
+.ea-fiche dt { font: 700 11px Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #8a5a12; }
+.ea-fiche dd { margin: 0; font-size: 15px; }
+
+.ea-cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 12px; margin: 0 0 24px; }
+.ea-carte { display: grid; gap: 3px; align-content: start; padding: 12px 16px; text-decoration: none; color: #15110a; background: rgba(255,253,240,.6); border: 1px solid rgba(60,40,10,.4); border-left: 6px solid var(--c); box-shadow: 0 2px 3px rgba(0,0,0,.2); }
+.ea-carte strong { font: 700 16px Georgia, serif; }
+.ea-carte span { font-size: 13px; color: #5b4a25; }
+a.ea-carte:hover, a.ea-carte:focus-visible { background: #fff6d8; }
+.ea-carte.venir { background: rgba(255,253,240,.25); border-style: dashed; border-left-style: solid; color: #6b5a2e; box-shadow: none; }
+.ea-carte.venir span { font-style: italic; }
+
+.ea-colonnes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 18px; margin: 0 0 22px; }
+.ea-colonnes section { padding: 10px 16px 12px; background: rgba(255,253,240,.5); border: 1px solid rgba(60,40,10,.35); }
+.ea-colonnes h3 { margin: 0 0 4px; padding: 0; border: 0; font: 400 24px/1.15 var(--script); color: #3b2a10; text-align: left; }
+.ea-colonnes ul { margin: 0; padding-left: 18px; font-size: 14px; }
+.ea-colonnes small { color: #6b5a2e; font-style: italic; }
+.ea-colonnes ~ .pb-mini, .ea-cartes ~ .pb-mini { margin: 0 auto 16px; }

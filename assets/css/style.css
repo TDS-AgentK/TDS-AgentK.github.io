@@ -348,11 +348,16 @@ figure img {
   .niveau1:hover > .sous-menu, .niveau1:focus-within > .sous-menu { display: none; }
   .niveau1.ouvert > .sous-menu { display: block; }
   .sous-menu.avec-sous-sous { overflow: visible; }
-  .a-sous-sous > a::after { content: "▾"; }                       /* sur téléphone, le sous-menu imbriqué reste déplié, en retrait */
+  /* sur téléphone, le sous-menu imbriqué s'ouvre avec sa flèche (le nom de l'État reste un lien vers sa page) */
+  .a-sous-sous { display: flex; flex-wrap: wrap; }
+  .a-sous-sous > a { flex: 1; }
+  .a-sous-sous > a::after { display: none; }
+  .a-sous-sous .sm-fleche { width: 44px; }
   .sous-sous-menu {
-    position: static; min-width: 0; padding: 0 0 4px 14px; border: 0; border-radius: 0; box-shadow: none; background: rgba(0, 0, 0, .14);
+    display: none; width: 100%; position: static; min-width: 0; padding: 0 0 4px 14px; border: 0; border-radius: 0; box-shadow: none; background: rgba(0, 0, 0, .14);
     visibility: visible; opacity: 1; transform: none; transition: none;
   }
+  .a-sous-sous.ouvert > .sous-sous-menu { display: block; }
   .grille-races li { width: calc(50% - 9px); }
 }
 
@@ -530,3 +535,46 @@ h2[id], h3[id] { scroll-margin-top: 16px; }
   .sommaire ol { max-height: calc(100vh - 190px); overflow-y: auto; margin: 0 12px 14px 10px; padding: 0 6px 0 4px; scrollbar-width: thin; }
 }
 @media (max-width: 800px) { .fiche { padding: 22px 20px; } .intro { padding: 18px 20px; } }
+
+/* Entrée de sous-menu dont la page n'existe pas encore (rubrique d'un État) */
+.sous-menu .a-venir { display: block; padding: 7px 18px; font-size: 13px; color: #a8a08a; font-style: italic; border-left: 3px solid transparent; cursor: default; }
+.sous-menu .a-venir small { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; margin-left: 4px; }
+
+/* Mention d'un personnage qui a sa fiche : souligné ondulé */
+a.lien-perso, a.lien-lore[data-genre="personnage"] {
+  color: inherit; text-decoration: underline wavy #8a5a12; text-decoration-thickness: 1px; text-underline-offset: 3px;
+}
+a.lien-perso:hover, a.lien-perso:focus-visible, a.lien-lore[data-genre="personnage"]:hover { text-decoration-color: #c0502a; text-decoration-thickness: 2px; }
+
+/* ---- « Le saviez-vous ? » : petit « ? » dans la bannière, fenêtre translucide ---------------------------- */
+.sv-bouton {
+  position: absolute; top: 10px; right: 12px; z-index: 30; width: 28px; height: 28px; padding: 0; line-height: 26px; text-align: center;
+  font: 700 17px Georgia, "Times New Roman", serif; color: #3b2a10; cursor: pointer;
+  background: rgba(248, 240, 214, .55); border: 1px solid rgba(59, 42, 16, .7); border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .35); transition: background .15s, transform .15s;
+}
+.sv-bouton:hover, .sv-bouton:focus-visible, .sv-bouton[aria-expanded="true"] { background: rgba(248, 240, 214, .95); transform: scale(1.08); }
+.sv-bouton[hidden] { display: none; }
+.sv-fenetre {
+  position: absolute; top: 44px; right: 10px; z-index: 30; width: min(290px, calc(100% - 20px)); padding: 8px 12px 10px; line-height: 1.4;
+  color: #1c1608; background: rgba(250, 243, 220, .66); border: 1px solid rgba(59, 42, 16, .5); border-radius: 4px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25); font: 13.5px/1.4 Georgia, "Times New Roman", serif; text-align: left;
+  animation: sv-entree .18s ease-out; transition: background .2s, box-shadow .2s;
+}
+.sv-fenetre:hover, .sv-fenetre:focus-within { background: rgba(250, 243, 220, .96); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }   /* translucide au repos : la bannière reste visible ; nette dès qu'on la survole */
+.sv-fenetre[hidden] { display: none; }
+.sv-fenetre .sv-tete { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; }
+.sv-fenetre .sv-cat { font: 700 10.5px Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #8a5a12; }
+.sv-fenetre .sv-fermer { margin-left: auto; padding: 0 6px; border: 0; background: transparent; font: 20px/1 Georgia, serif; color: #3b2a10; cursor: pointer; }
+.sv-fenetre .sv-titre { margin: 0 0 3px; font: 400 21px/1.15 var(--script, Georgia, serif); color: #3b2a10; }
+.sv-fenetre .sv-texte { margin: 0 0 8px; }
+.sv-fenetre .sv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font: 12.5px Helvetica, Arial, sans-serif; }
+.sv-fenetre .sv-autre { padding: 3px 10px; cursor: pointer; font: inherit; color: #26231a; background: rgba(240, 213, 138, .85); border: 1px solid #6b5220; border-radius: 3px; }
+.sv-fenetre .sv-autre:hover { background: #f0d58a; }
+@keyframes sv-entree { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 800px) {
+  .sv-bouton { top: 6px; right: 8px; width: 26px; height: 26px; line-height: 24px; font-size: 15px; }
+  .sv-fenetre { top: 36px; right: 8px; background: rgba(250, 243, 220, .9); }
+}
+@media (prefers-reduced-motion: reduce) { .sv-fenetre { animation: none; } .sv-bouton { transition: none; } }
+@media print { .sv-bouton, .sv-fenetre { display: none !important; } }
