@@ -5,8 +5,36 @@
 (function () {
   'use strict';
   var SANS_HOVER = matchMedia('(hover: none)').matches;
+  var DELAI = 550;                                    // temps de survol avant l'affichage ; l'anneau se remplit pendant ce délai
+  var CIRCONFERENCE = 2 * Math.PI * 13;
   var cache = {};                                    // href -> {titre, desc, image} | 'erreur' | Promise
-  var carte = null, lienActif = null, minuteurOuverture = null, minuteurFermeture = null;
+  var carte = null, anneau = null, lienActif = null, minuteurOuverture = null, minuteurFermeture = null;
+
+  function creerAnneau() {
+    if (anneau) return anneau;
+    anneau = document.createElement('div');
+    anneau.className = 'apercu-anneau';
+    anneau.hidden = true;
+    anneau.innerHTML =
+      '<svg viewBox="0 0 32 32" aria-hidden="true">' +
+      '<circle class="apercu-fond" cx="16" cy="16" r="13"></circle>' +
+      '<circle class="apercu-progres" cx="16" cy="16" r="13" stroke-dasharray="' + CIRCONFERENCE + '" stroke-dashoffset="' + CIRCONFERENCE + '"></circle>' +
+      '</svg><img src="/assets/img/icones/I_Clock.png" alt="" width="14" height="14">';
+    document.body.appendChild(anneau);
+    return anneau;
+  }
+  function positionnerAnneau(lien) {
+    var r = lien.getBoundingClientRect();
+    anneau.style.left = (window.scrollX + r.right + 4) + 'px';
+    anneau.style.top = (window.scrollY + r.top + r.height / 2 - 11) + 'px';
+  }
+  function cacherAnneau() {
+    if (!anneau) return;
+    anneau.hidden = true;
+    anneau.classList.remove('en-cours');
+    var p = anneau.querySelector('.apercu-progres');
+    if (p) p.style.animation = 'none';
+  }
 
   function creerCarte() {
     if (carte) return carte;
@@ -61,6 +89,7 @@
 
   function afficher(lien) {
     lienActif = lien;
+    cacherAnneau();
     var c = creerCarte();
     var href = lien.getAttribute('href');
     charger(href).then(function (info) {
@@ -77,10 +106,18 @@
 
   function programmerOuverture(lien) {
     clearTimeout(minuteurFermeture); clearTimeout(minuteurOuverture);
-    minuteurOuverture = setTimeout(function () { afficher(lien); }, 320);
+    var a = creerAnneau();
+    positionnerAnneau(lien);
+    a.hidden = false;
+    var p = a.querySelector('.apercu-progres');
+    p.style.animation = 'none';
+    void p.offsetWidth;                                // force le navigateur à relancer l'animation à zéro à chaque survol
+    p.style.animation = 'apercu-remplir ' + DELAI + 'ms steps(10, end) forwards';
+    minuteurOuverture = setTimeout(function () { afficher(lien); }, DELAI);
   }
   function programmerFermeture() {
     clearTimeout(minuteurFermeture);
+    cacherAnneau();
     minuteurFermeture = setTimeout(function () { if (carte) carte.hidden = true; lienActif = null; }, 220);
   }
 
