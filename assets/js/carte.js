@@ -147,10 +147,14 @@
   var reperes = {};
   lieux.forEach(function (l) {
     if (l.x == null || !cartes[l.carte]) return;
-    var b = h("button", { type: "button", class: "cm-repere", "data-cat": l.cat, "data-carte": l.carte,
-      style: "left:" + l.x + "%;top:" + l.y + "%", "aria-label": l.nom + " — " + (catNom[l.cat] || "") }, [
-      h("span", { class: "cm-pin" }), h("span", { class: "cm-nom", text: l.nom }),
-    ]);
+    var pin = h("span", { class: "cm-pin" });
+    if (l.dieu) pin.appendChild(h("img", { class: "cm-pin-dieu", src: l.dieu.sprite, alt: "", title: "Temple de " + l.dieu.nom }));
+    var enfants = [pin, h("span", { class: "cm-nom", text: l.nom })];
+    if (l.race) enfants.push(h("img", { class: "cm-pin-race", src: l.race.sprite, alt: "", title: l.race.nom + " (race principale)" }));
+    var attrsRepere = { type: "button", class: "cm-repere", "data-cat": l.cat, "data-carte": l.carte,
+      style: "left:" + l.x + "%;top:" + l.y + "%", "aria-label": l.nom + " — " + (catNom[l.cat] || "") + (l.souterrain ? " (souterrain)" : "") };
+    if (l.souterrain) attrsRepere["data-souterrain"] = "1";
+    var b = h("button", attrsRepere, enfants);
     b.addEventListener("click", function (e) { e.stopPropagation(); choisir(l.id); });
     b.addEventListener("mouseenter", function () { surligner(l.id, true); });
     b.addEventListener("mouseleave", function () { surligner(l.id, false); });

@@ -578,3 +578,21 @@ a.lien-perso:hover, a.lien-perso:focus-visible, a.lien-lore[data-genre="personna
 }
 @media (prefers-reduced-motion: reduce) { .sv-fenetre { animation: none; } .sv-bouton { transition: none; } }
 @media print { .sv-bouton, .sv-fenetre { display: none !important; } }
+
+/* ---- Mini-fenêtre d'aperçu sur les liens internes (survol ou clic, voir apercu.js) ---- */
+.lien-apercu { text-decoration: none; border-bottom: 1px dotted var(--accent, #8a5a12); }
+.lien-apercu:hover, .lien-apercu:focus-visible { border-bottom-style: solid; }
+.apercu-carte {
+  position: absolute; z-index: 60; width: 300px; max-width: calc(100vw - 20px); background: var(--papier, #e8dfc3);
+  border: 1px solid rgba(60, 40, 10, .35); border-radius: 6px; box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+  font: 13.5px/1.45 Georgia, "Times New Roman", serif; color: var(--encre, #15110a); overflow: hidden;
+  animation: apercu-entree .15s ease-out;
+}
+.apercu-carte[hidden] { display: none; }
+.apercu-carte .apercu-img { display: block; width: 100%; height: 130px; object-fit: cover; background: var(--papier-ombre, #d3c69f); }
+.apercu-carte .apercu-txt { padding: 10px 12px; }
+.apercu-carte .apercu-txt b { display: block; margin: 0 0 4px; font: 400 17px var(--script, Georgia, serif); color: #3b2a10; }
+.apercu-carte .apercu-txt p { margin: 0; color: #4a3a1a; }
+@keyframes apercu-entree { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .apercu-carte { animation: none; } }
+@media print { .apercu-carte { display: none !important; } }

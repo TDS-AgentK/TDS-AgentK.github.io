@@ -38,6 +38,22 @@
   transition: transform .15s, box-shadow .15s;
 }
 .cm-repere[data-cat="region"] .cm-pin { border-radius: 50%; transform: none; width: 20px; height: 20px; left: -10px; top: -10px; border-style: dashed; }
+/* Ville avec un temple principal : le logo du dieu dans le losange (icône remise droite, recadrée en carré) */
+.cm-pin-dieu {
+  position: absolute; left: 50%; top: 50%; width: 13px; height: 13px; transform: translate(-50%, -50%) rotate(-45deg);
+  object-fit: cover; object-position: top; border-radius: 1px; pointer-events: none;
+}
+/* Race principale du territoire : petite icône posée à côté du losange (même sprite que le calque « personnages des races ») */
+.cm-pin-race {
+  position: absolute; left: 9px; top: -13px; width: 13px; height: auto; image-rendering: pixelated;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 1px #fff); pointer-events: none;
+}
+/* Lieu souterrain (Dro'Xun, Mini'Coin…) : un petit repère discret sous le losange plutôt que de charger le losange lui-même */
+.cm-repere[data-souterrain="1"]::after {
+  content: ""; position: absolute; left: -5px; top: 11px; width: 10px; height: 5px; border-radius: 0 0 8px 8px;
+  background: repeating-linear-gradient(135deg, #6b4a2a, #6b4a2a 2px, #3b2a10 2px, #3b2a10 4px);
+  box-shadow: 0 0 0 1.5px #fff, 0 2px 3px rgba(0, 0, 0, .6); pointer-events: none;
+}
 .cm-repere:hover .cm-pin, .cm-repere.survol .cm-pin, .cm-repere:focus-visible .cm-pin { transform: rotate(45deg) scale(1.3); box-shadow: 0 0 0 3px #fff, 0 4px 10px rgba(0, 0, 0, .8); }
 .cm-repere[data-cat="region"]:hover .cm-pin, .cm-repere[data-cat="region"].survol .cm-pin { transform: scale(1.3); }
 .cm-repere:focus-visible { outline: none; }
