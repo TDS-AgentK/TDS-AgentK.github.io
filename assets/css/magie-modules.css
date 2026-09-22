@@ -83,3 +83,8 @@ ul[data-sphere][hidden] { display: none; }
   .auras-ecole-nom { flex-basis: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .sphere-halo { transition: none; } }
+
+/* Sphère d'affinité reprise dans une colonne étroite (page d'un événement) : la sphère au-dessus, le texte dessous */
+.page-corps .sphere-module { grid-template-columns: 1fr; justify-items: center; }
+.page-corps .sphere-module .sphere-scene { width: min(300px, 100%); }
+.page-corps .sphere-module .sphere-panneau { width: 100%; }
