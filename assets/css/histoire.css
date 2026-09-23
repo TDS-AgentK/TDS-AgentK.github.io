@@ -26,6 +26,19 @@
 .frise-recherche:focus { outline: 2px solid #e0b85c; }
 .frise-compteur { margin: 0 !important; font: italic 13px Georgia, serif; color: #5b4a25; text-align: center !important; }
 
+/* ---- Bouton vers la grande frise interactive (zoom/pan + Voyage dans le temps) --------------------- */
+.frise-interactive { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 4px 0 34px; text-align: center; }
+.frise-interactive .bouton-frise {
+  display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; font: 700 14px Helvetica, Arial, sans-serif; text-decoration: none;
+  color: #fff; background: linear-gradient(#7d7861, #57533f); border: 1px solid rgba(60, 40, 10, .5); border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 2px 6px rgba(0, 0, 0, .3); text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+  transition: transform .12s, box-shadow .12s;
+}
+.frise-interactive .bouton-frise:hover, .frise-interactive .bouton-frise:focus-visible {
+  transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 0 0 2px rgba(224, 184, 92, .55), 0 6px 10px -3px rgba(0, 0, 0, .35);
+}
+.frise-interactive .fi-horloge { width: 11px; height: 34px; flex: none; image-rendering: pixelated; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .5)); }
+
 /* ---- La frise : une ligne verticale, une carte par événement ------------------------------------- */
 .frise-liste { list-style: none; margin: 0; padding: 0; position: relative; }
 .frise-liste::before { content: ""; position: absolute; left: calc(158px + var(--gout, 0px)); top: 0; bottom: 0; width: 3px; background: linear-gradient(rgba(60, 40, 10, 0), rgba(60, 40, 10, .55) 40px, rgba(60, 40, 10, .55) calc(100% - 40px), rgba(60, 40, 10, 0)); }

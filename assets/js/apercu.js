@@ -19,7 +19,7 @@
       '<svg viewBox="0 0 32 32" aria-hidden="true">' +
       '<circle class="apercu-fond" cx="16" cy="16" r="13"></circle>' +
       '<circle class="apercu-progres" cx="16" cy="16" r="13" stroke-dasharray="' + CIRCONFERENCE + '" stroke-dashoffset="' + CIRCONFERENCE + '"></circle>' +
-      '</svg><img src="/assets/img/icones/I_Clock.png" alt="" width="14" height="14">';
+      '</svg>';
     document.body.appendChild(anneau);
     return anneau;
   }
