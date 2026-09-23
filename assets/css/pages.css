@@ -42,9 +42,12 @@
 .dj-conv input[type="number"] { width: 84px; }
 .dj-conv input:focus, .dj-conv select:focus { outline: 2px solid #e0b85c; }
 .dj-resultat { display: block; margin-top: 2px; font: 700 16px/1.35 Georgia, serif; color: #2b1d07; }
-.cal-signe { display: inline-block; margin-left: 4px; padding: 0 5px; font: 700 13px Georgia, serif; text-decoration: none; color: var(--accent); }
-.cal-signe:hover, .cal-signe:focus-visible { background: rgba(255, 255, 255, .6); }
 .cal-bloc li:target { background: rgba(224, 184, 92, .35); }
+.cal-icones { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: middle; }
+.cal-icone { display: inline-flex; border-radius: 50%; overflow: hidden; border: 1px solid rgba(60, 40, 10, .45); box-shadow: 0 1px 2px rgba(0, 0, 0, .3); transition: transform .12s; }
+.cal-icone:hover, .cal-icone:focus-visible { transform: scale(1.18); }
+.cal-icone img { display: block; width: 20px; height: 20px; object-fit: cover; background: #fffdf3; }
+.cal-icone.cal-dieu img { object-fit: contain; padding: 1px; }
 
 /* ---- Documents intégrés (PDF, quiz) ---------------------------------------------------------------- */
 .doc-integre { margin: 26px 0; padding: 10px; background: rgba(255, 255, 255, .3); border: 1px solid rgba(60, 40, 10, .4); box-shadow: inset 0 0 18px rgba(110, 75, 25, .18), 0 3px 8px rgba(40, 25, 5, .25); }
