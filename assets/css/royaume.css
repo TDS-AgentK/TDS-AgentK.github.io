@@ -56,10 +56,11 @@
 .signe-traits dt { font: 700 10px Helvetica, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #6b5a2e; }
 .signe-traits dd { margin: 0; font: 700 16px Georgia, serif; }
 .signe:target { outline: 3px solid #e0b85c; outline-offset: 4px; }
+.signe-corps { position: relative; }
 .signe-dieu { position: absolute; top: 14px; right: 16px; z-index: 2; margin: 0; }
-.signe-dieu a { display: inline-flex; border-radius: 50%; overflow: hidden; border: 1px solid rgba(60, 40, 10, .45); box-shadow: 0 1px 3px rgba(0, 0, 0, .4); transition: transform .12s; }
-.signe-dieu a:hover, .signe-dieu a:focus-visible { transform: scale(1.15); }
-.signe-dieu img { display: block; width: 28px; height: 28px; object-fit: contain; background: #fffdf3; padding: 2px; }
+.signe-dieu a { display: inline-flex; transition: transform .15s; }
+.signe-dieu a:hover, .signe-dieu a:focus-visible { transform: scale(1.2); }
+.signe-dieu img { display: block; width: 30px; height: auto; max-height: 42px; object-fit: contain; background: transparent; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)); }
 
 /* ============================================================================================
    Politique extérieure
