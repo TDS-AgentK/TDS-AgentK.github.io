@@ -200,3 +200,29 @@
   .echelle li span { font-size: 21px; padding: 10px 44px 10px 40px; }
   .rang-icone { width: 30px !important; height: 30px !important; }
 }
+
+/* Arbres généalogiques : bouton « Agrandir » + visionneuse en taille réelle (arbre.js) */
+.arbre { text-align: center; }
+.arbre figcaption { margin: 6px 2px 0; text-align: right; font: italic 12px Georgia, serif; }
+.arbre figcaption a { color: #5b4a25; }
+.arbre-agrandir {
+  margin: 10px 0 2px; padding: 8px 20px; font: 700 14px Helvetica, Arial, sans-serif; color: #15110a; cursor: pointer;
+  background: linear-gradient(#efe6c7, #d6c894); border: 1px solid rgba(60, 40, 10, .6); border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(40, 25, 5, .35);
+}
+.arbre-agrandir:hover, .arbre-agrandir:focus-visible { background: #fff; }
+body.arbre-zoom-ouvert { overflow: hidden; }
+.arbre-zoom { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; background: rgba(15, 11, 4, .94); }
+.arbre-zoom[hidden] { display: none; }
+.arbre-zoom-barre { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; background: #2c2412; border-bottom: 1px solid #000; }
+.arbre-zoom-barre button {
+  min-width: 38px; padding: 6px 12px; font: 700 14px Helvetica, Arial, sans-serif; color: #15110a; cursor: pointer;
+  background: linear-gradient(#efe6c7, #d6c894); border: 1px solid rgba(0, 0, 0, .6); border-radius: 4px;
+}
+.arbre-zoom-barre button:hover, .arbre-zoom-barre button:focus-visible { background: #fff; }
+.arbre-zoom-fermer { margin-left: auto; }
+.arbre-zoom-pct { min-width: 52px; text-align: center; color: #f6f2e2; font: 14px Helvetica, Arial, sans-serif; }
+.arbre-zoom-zone { flex: 1; overflow: auto; cursor: grab; touch-action: pan-x pan-y; background: #fff; outline: 0; }
+.arbre-zoom-zone.glisse { cursor: grabbing; user-select: none; }
+.arbre-zoom-zone img { display: block; max-width: none !important; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+.arbre-zoom-aide { margin: 0; padding: 6px 14px; color: #cfc6a6; font: 12px Helvetica, Arial, sans-serif; text-align: center; background: #2c2412; }
