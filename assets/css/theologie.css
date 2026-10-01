@@ -41,8 +41,40 @@
   content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
   background: linear-gradient(90deg, rgba(60, 40, 10, .55), transparent);
 }
-.dieu-affilees h3 { font-size: 24px; margin-top: 1.4em; }
 .dieu-illustration img { width: 100%; }
+
+/* ---- Histoires affiliées : deux présentations possibles (choisie par la classe posée par import_theologie.py) --- */
+
+/* Plaquette A — « le Feuillet » : un seul encart de parchemin, les récits séparés par un fleuron. */
+.plaquette-a { position: relative; margin-top: 2.6em; padding: 26px 34px 6px; background: linear-gradient(#f1e8ca, #dfd2a3);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 22px -8px rgba(30, 20, 4, .5); }
+.plaquette-a::after { content: ""; position: absolute; inset: 0; pointer-events: none; border: 14px solid transparent;
+  border-image: url("/assets/img/panneau-parchemin.png") 8 / 14px repeat; image-rendering: pixelated;
+  mix-blend-mode: multiply; filter: grayscale(.45) sepia(.75) saturate(.55) brightness(.9) contrast(1.05); }
+.plaquette-a > h2 { text-align: center; }
+.plaquette-a > h2::after { left: 50%; width: 120px; transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(60, 40, 10, .55), transparent); }
+.plaquette-a .recit + .recit { position: relative; margin-top: 1.7em; padding-top: 1.9em; border-top: 1px dashed rgba(60, 40, 10, .38); }
+.plaquette-a .recit + .recit::before { content: "❧"; position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+  padding: 0 12px; background: #e6d8a9; color: #7a5312; font-size: 19px; }
+.plaquette-a .recit h3 { text-align: center; font: 400 28px/1.15 var(--script); margin: 0 0 .55em; }
+.plaquette-a .recit-texte p:first-of-type::first-letter { float: left; font: 400 2.7em/0.78 var(--script); padding: 7px 7px 0 0; color: #3b2a10;
+  text-shadow: 1px 2px 3px rgba(70, 45, 10, .35); }
+
+/* Plaquette B — « les Plaques » : chaque récit dans sa propre plaque scellée. */
+.plaquette-b { margin-top: 2.6em; }
+.plaquette-b > h2 { text-align: center; }
+.plaquette-b .recit { position: relative; margin-top: 26px; padding: 24px 28px 22px; background: linear-gradient(#efe6c7, #d6c894);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .3), 0 10px 20px -8px rgba(30, 20, 4, .5); }
+.plaquette-b .recit::after { content: ""; position: absolute; inset: 0; pointer-events: none; border: 8px solid transparent;
+  border-image: url("/assets/img/panneau-parchemin.png") 8 / 8px repeat; image-rendering: pixelated;
+  mix-blend-mode: multiply; filter: grayscale(.45) sepia(.75) saturate(.55) brightness(.9) contrast(1.05); }
+.plaquette-b .recit[data-lettre]::before { content: attr(data-lettre); position: absolute; top: -18px; left: 26px; z-index: 2;
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font: 700 19px Georgia, serif; color: #fdf6dd; background: linear-gradient(#c99a3f, #8a5a12); border: 2px solid #3b2a10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .5); }
+.plaquette-b .recit h3 { margin: 0 0 .55em 48px; font: 400 25px/1.2 var(--script); }
+.plaquette-b .recit-texte p:first-of-type::first-letter { float: left; font: 400 2.4em/0.8 var(--script); padding: 6px 6px 0 0; color: #3b2a10; }
 
 /* Listes de lieux liés (colonne de droite) */
 .puces-lieux { list-style: none; margin: 0; padding: 0; }

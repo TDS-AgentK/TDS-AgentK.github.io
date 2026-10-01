@@ -603,3 +603,25 @@ a.lien-perso:hover, a.lien-perso:focus-visible, a.lien-lore[data-genre="personna
 @keyframes apercu-entree { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .apercu-carte { animation: none; } }
 @media print { .apercu-carte { display: none !important; } }
+
+/* ---------- Citations du lore TDS : effet parchemin (utilisé par les personnages, mais aussi villes/théologie/races) ---------- */
+.quote-tds {
+  position: relative; margin: 26px 0; padding: 26px 34px 24px 52px; max-width: 700px; color: #2b1d07;
+  background: var(--grain), linear-gradient(90deg, rgba(90, 55, 10, .35), transparent 5%, transparent 95%, rgba(90, 55, 10, .35)), linear-gradient(#f2e8c6, #e2d4a4);
+  box-shadow: 0 4px 10px -4px rgba(30, 20, 4, .6);
+}
+.quote-tds::before { content: "\201C"; position: absolute; left: 12px; top: 0; font: 400 72px/1 Georgia, serif; color: #8a5a12; opacity: .75; }
+.quote-tds p { margin: 0; font: italic 17px/1.5 Georgia, serif; text-align: left; hyphens: none; }
+.quote-tds .src { margin-top: 10px; font: 700 11.5px Helvetica, Arial, sans-serif; letter-spacing: .05em; text-transform: uppercase; color: #6b4a12; }
+.quote-tds .src::before { content: "Lore TDS · "; color: #8a5a12; }
+.quote-tds .src a { color: inherit; }
+/* rouleau (fiches longues) : extrémités enroulées */
+.quote-tds.rouleau::after, .quote-tds.rouleau > .e {
+  content: ""; position: absolute; left: -6px; right: -6px; height: 14px; border-radius: 7px;
+  background: linear-gradient(#b48a3c, #e9cf8a 45%, #8a5a12); box-shadow: 0 2px 3px rgba(0, 0, 0, .4);
+}
+.quote-tds.rouleau::after { bottom: -10px; }
+.quote-tds.rouleau > .e { top: -10px; }
+/* bandeau sobre (fiches courtes) */
+.quote-tds.simple { margin: 16px 0; padding: 12px 18px 12px 50px; box-shadow: inset 4px 0 0 #8a5a12; background: rgba(255, 255, 255, .35); }
+.quote-tds.simple::before { font-size: 54px; left: 10px; top: 2px; }

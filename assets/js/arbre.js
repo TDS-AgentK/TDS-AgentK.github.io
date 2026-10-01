@@ -16,13 +16,17 @@
       '<button type="button" data-a="plus" aria-label="Zoom avant">+</button>' +
       '<button type="button" data-a="reel">Taille réelle</button>' +
       '<button type="button" data-a="ecran">Ajuster à l’écran</button>' +
+      '<a class="arbre-zoom-dl" download>⬇ Télécharger</a>' +
       '<button type="button" data-a="fermer" class="arbre-zoom-fermer">Fermer ✕</button>' +
       '</div>' +
-      '<div class="arbre-zoom-zone" tabindex="0"><img alt=""></div>' +
+      '<div class="arbre-zoom-zone" tabindex="0"><img alt="" draggable="false"></div>' +
       '<p class="arbre-zoom-aide">Glissez pour vous déplacer · molette ou +/− pour zoomer · Échap pour fermer</p>';
     document.body.appendChild(fenetre);
     zone = fenetre.querySelector('.arbre-zoom-zone');
     image = zone.querySelector('img');
+    /* l'image ne doit jamais être « attrapée » par le navigateur : seul le défilement de la zone bouge */
+    image.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    zone.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
     fenetre.addEventListener('click', function (e) {
       var b = e.target.closest('button');
@@ -42,7 +46,8 @@
 
     var glisse = null;
     zone.addEventListener('pointerdown', function (e) {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || (e.pointerType && e.pointerType === 'touch')) return; /* au doigt : défilement natif */
+      e.preventDefault();
       glisse = { x: e.clientX, y: e.clientY, l: zone.scrollLeft, t: zone.scrollTop };
       zone.setPointerCapture(e.pointerId);
       zone.classList.add('glisse');
@@ -102,6 +107,8 @@
     image.style.width = image.style.height = '';
     image.alt = alt || '';
     image.src = src;
+    var dl = fenetre.querySelector('.arbre-zoom-dl');
+    dl.href = src; dl.setAttribute('download', src.split('/').pop().split('?')[0] || 'arbre-genealogique.png');
     fenetre.hidden = false;
     document.body.classList.add('arbre-zoom-ouvert');
     zone.focus();
