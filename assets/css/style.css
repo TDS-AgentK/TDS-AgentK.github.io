@@ -625,3 +625,40 @@ a.lien-perso:hover, a.lien-perso:focus-visible, a.lien-lore[data-genre="personna
 /* bandeau sobre (fiches courtes) */
 .quote-tds.simple { margin: 16px 0; padding: 12px 18px 12px 50px; box-shadow: inset 4px 0 0 #8a5a12; background: rgba(255, 255, 255, .35); }
 .quote-tds.simple::before { font-size: 54px; left: 10px; top: 2px; }
+
+/* ---------- Fil d'or de lecture (défilement) + « encre qui sèche » + temps de lecture ----------
+   Inspiré des animations CSS pilotées par le défilement (animation-timeline) : sans JavaScript là où le navigateur sait faire,
+   avec un petit script de secours (lecture.js) ailleurs. Rien n'est caché si le navigateur ne connaît pas la technique. */
+.fil-defilement {
+  position: fixed; top: 0; left: 0; right: 0; height: 5px; z-index: 90; pointer-events: none;
+  background: linear-gradient(rgba(20, 12, 2, .6), rgba(20, 12, 2, .3)); border-bottom: 1px solid rgba(0, 0, 0, .55);
+}
+.fil-defilement i {
+  display: block; height: 100%; transform: scaleX(0); transform-origin: 0 50%;
+  background: linear-gradient(#f3dd9c, #b48a3c 55%, #8a5a12);
+  box-shadow: 0 0 9px rgba(233, 207, 138, .75), 0 1px 0 rgba(255, 255, 255, .35) inset;
+}
+@keyframes fil-grandit { to { transform: scaleX(1); } }
+@supports (animation-timeline: scroll()) {
+  .fil-defilement i { animation: fil-grandit linear both; animation-timeline: scroll(root block); }
+}
+
+@keyframes encre-seche {
+  from { opacity: 0; transform: translateY(16px); filter: sepia(.9) blur(1.6px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    main h2, main h3, main .quote-tds, main figure, main .lieu-resume, main .carte-fiche {
+      animation: encre-seche linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+.temps-lecture {
+  margin: -6px 0 16px; text-align: center; font: 700 10.5px/1 Helvetica, Arial, sans-serif;
+  letter-spacing: .12em; text-transform: uppercase; color: #6b4a12; opacity: .8;
+}
+.temps-lecture::before, .temps-lecture::after { content: "\25C6"; margin: 0 .8em; font-size: 7px; vertical-align: 1px; color: var(--accent); }
+
+@media print { .fil-defilement, .temps-lecture { display: none; } }
