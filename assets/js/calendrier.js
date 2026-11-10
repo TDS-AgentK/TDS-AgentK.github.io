@@ -60,23 +60,54 @@
     if (actuel < prec && actuel > suiv) return "Phase décroissante";
     return "Phase inconnue";
   }
-  function imageLune(l, phase, pct) {
-    if (phase === "Nouvelle lune") return l.nouvelle;
-    if (phase === "Pleine lune") return l.pleine;
-    var table = phase === "Phase décroissante" ? l.decroissante : l.croissante, url = "";
-    table.forEach(function (i) { if (pct >= i[0] && pct < i[1]) url = i[2]; });
-    return url;
+  // Dessin d'une lune : une seule image de pleine lune, dont la partie éclairée est découpée par un clipPath SVG
+  // (lumière à gauche quand la lune croît, à droite quand elle décroît). Même tracé que sur Chroniques du Temps.
+  var NS = "http://www.w3.org/2000/svg", XL = "http://www.w3.org/1999/xlink", compteurLune = 0;
+  function contourEclaire(part, croissante, cx, cy, r) {
+    cx = cx === undefined ? 64 : cx; cy = cy === undefined ? 65 : cy; r = r === undefined ? 61 : r;
+    var f = Math.max(0, Math.min(1, part));
+    var gauche = croissante;
+    var rx = Math.max(0.01, Math.abs(1 - 2 * f) * r);
+    var balayageBord = gauche ? 0 : 1;
+    var balayageTerm = f < 0.5 ? (gauche ? 1 : 0) : (gauche ? 0 : 1);
+    function n(v) { return v.toFixed(2); }
+    return "M" + n(cx) + " " + n(cy - r) + "A" + n(r) + " " + n(r) + " 0 0 " + balayageBord + " " + n(cx) + " " + n(cy + r) +
+           "A" + n(rx) + " " + n(r) + " 0 0 " + balayageTerm + " " + n(cx) + " " + n(cy - r) + "Z";
+  }
+  function svgEl(nom, attrs) {
+    var e = document.createElementNS(NS, nom);
+    Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    return e;
+  }
+  // x = { nom, cur (0-100), croissante, texteAlt }
+  function dessinLune(x, taille) {
+    var id = "lune-eclairee-" + x.nom + "-" + (++compteurLune), url = lunesData[x.nom].pleine;
+    var svg = svgEl("svg", { "class": "icon lune", viewBox: "0 0 128 130", role: "img", "aria-label": x.texteAlt });
+    if (taille) { svg.setAttribute("width", taille); svg.setAttribute("height", Math.round(taille * 130 / 128)); }
+    var defs = svgEl("defs"), cp = svgEl("clipPath", { id: id });
+    cp.appendChild(svgEl("path", { d: contourEclaire(x.cur / 100, x.croissante) }));
+    defs.appendChild(cp); svg.appendChild(defs);
+    svg.appendChild(svgEl("image", { href: url, width: "128", height: "130", "class": "lune-ombre" }));
+    svg.appendChild(svgEl("image", { href: url, width: "128", height: "130", "clip-path": "url(#" + id + ")" }));
+    return svg;
   }
   // Comme sur Chroniques du Temps : seul le mois et le jour comptent (année fixée à 1255), le jour lunaire est compté depuis le 1er janvier -7000.
   function jourLunaire(mois, jour) { return Math.floor((Date.UTC(1255, mois - 1, jour) - Date.UTC(-7000, 0, 1)) / 86400000); }
-  function lunes(mois, jour) {
+  // fraction : null = valeur officielle de la journée ; sinon jour lunaire fractionnaire (courbe sinusoïdale continue).
+  // La phase écrite reste calculée sur la journée entière.
+  function lunes(mois, jour, fraction) {
     if (!lunesData) return [];
     var n = jourLunaire(mois, jour);
     return Object.keys(lunesData).map(function (nom) {
       var l = lunesData[nom], p = pourcent(l, n), phase = phaseDe(p, pourcent(l, n - 1), pourcent(l, n + 1));
-      return { nom: nom, pct: p, phase: phase, image: imageLune(l, phase, p) };
+      var jf = fraction == null ? n : n + fraction, cur = pourcent(l, jf);
+      return { nom: nom, pct: p, phase: phase, cur: cur, croissante: pourcent(l, jf + 0.05) >= pourcent(l, jf - 0.05) };
     });
   }
+  // Jour lunaire fractionnaire « maintenant » : (heure UTC écoulée depuis minuit) - 0,5, pour que midi UTC retombe sur la valeur officielle.
+  function fractionMaintenant(now) { return (now.getTime() - Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())) / 86400000 - 0.5; }
+  var HEURE_GRILLE = 20;   // la grille mensuelle montre chaque jour à 20 h UTC
+  function fractionGrille() { return HEURE_GRILLE / 24 - 0.5; }
   function pctTexte(p) { return p.toFixed(1).replace(".", ",") + " %"; }
   function texteLunes(mois, jour) {
     return lunes(mois, jour).map(function (x) { return x.nom + " " + pctTexte(x.pct) + " (" + x.phase.toLowerCase() + ")"; }).join(" · ");
@@ -156,12 +187,13 @@
   champReel.value = iso;
   champJour.value = j0.jour; champMois.value = j0.mois; champAnnee.value = j0.annee;
   majSens1(); majSens2();
-  lunes(auj.getUTCMonth() + 1, auj.getUTCDate()).forEach(function (x) {
+  lunes(auj.getUTCMonth() + 1, auj.getUTCDate(), fractionMaintenant(auj)).forEach(function (x) {
     var fig = el("figure", { "class": "dj-lune" });
-    if (x.image) fig.appendChild(el("img", { src: x.image, alt: "Lune " + x.nom + " : " + pctTexte(x.pct) + ", " + x.phase.toLowerCase(), width: "128", height: "130", loading: "lazy" }));
+    x.texteAlt = "Lune " + x.nom + " : " + pctTexte(x.cur) + ", " + x.phase.toLowerCase();
+    fig.appendChild(dessinLune(x, 64));
     var leg = el("figcaption");
     leg.appendChild(el("strong", null, x.nom));
-    leg.appendChild(el("span", { "class": "dj-lune-pct" }, pctTexte(x.pct)));
+    leg.appendChild(el("span", { "class": "dj-lune-pct" }, pctTexte(x.cur)));
     leg.appendChild(el("span", { "class": "dj-lune-phase" }, x.phase));
     fig.appendChild(leg);
     blocLunes.appendChild(fig);
@@ -172,6 +204,7 @@
   f2.addEventListener("submit", function (e) { e.preventDefault(); });
 
   // ---- calendrier lunaire (fenêtre) --------------------------------------------------------------------
+  // Dans la vue mois par mois, chaque lune est dessinée telle qu'elle est à 20 h UTC ; la phase écrite reste celle de la journée.
   // Prochaines « conjonctions » des deux lunes (double pleine lune, double nouvelle lune, nouvelle + pleine dans les deux sens)
   // et vue mois par mois. Mêmes règles que les lunes du haut de page : pleine lune au-dessus de 95 %, nouvelle lune sous 6 %.
   if (lunesData) {
@@ -183,7 +216,7 @@
     ];
     function codePhase(x) { return x.phase === "Pleine lune" ? "P" : x.phase === "Nouvelle lune" ? "N" : ""; }
     function lunesDuJour(d) {
-      var l = lunes(d.getMonth() + 1, d.getDate()), r = {};
+      var l = lunes(d.getMonth() + 1, d.getDate(), fractionGrille()), r = {};
       l.forEach(function (x) { r[x.nom] = x; });
       return r;
     }
@@ -293,7 +326,11 @@
         var lunesCell = el("span", { "class": "ld-lunes" });
         ["Davos", "Amarante"].forEach(function (nom) {
           if (!r[nom]) return;
-          lunesCell.appendChild(el("img", { src: r[nom].image, alt: nom + " " + pctTexte(r[nom].pct) + " (" + r[nom].phase.toLowerCase() + ")", title: nom + " : " + pctTexte(r[nom].pct) + " · " + r[nom].phase, width: "22", height: "22", loading: "lazy" }));
+          var x = r[nom];
+          x.texteAlt = nom + " " + pctTexte(x.cur) + " à " + HEURE_GRILLE + " h UTC (" + x.phase.toLowerCase() + ")";
+          var dessin = dessinLune(x, 22);
+          dessin.appendChild(svgEl("title", {})).textContent = nom + " : " + pctTexte(x.cur) + " à " + HEURE_GRILLE + " h UTC · " + x.phase;
+          lunesCell.appendChild(dessin);
         });
         cell.appendChild(lunesCell);
         if (ty) cell.setAttribute("title", TYPES.filter(function (x) { return x.cle === ty; })[0].titre);

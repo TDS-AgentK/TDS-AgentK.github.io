@@ -85,7 +85,7 @@
 /* Calendrier : les deux lunes (Davos et Amarante) */
 .dj-lunes { display: flex; flex-wrap: wrap; gap: 14px 30px; justify-content: center; margin: 14px 0 2px; }
 .dj-lune { display: flex; align-items: center; gap: 12px; margin: 0; padding: 8px 16px 8px 8px; background: linear-gradient(#2a2233, #15111b); border: 2px solid #1c150a; border-radius: 4px; color: #f2ead2; box-shadow: 0 2px 5px rgba(0, 0, 0, .4); text-align: left; }
-.dj-lune img { display: block; width: 64px; height: auto; border-radius: 50%; background: #000; }
+.dj-lune img, .dj-lune svg { display: block; width: 64px; height: auto; border-radius: 50%; background: #000; }
 .dj-lune figcaption { display: grid; gap: 1px; }
 .dj-lune strong { font: 400 26px/1.1 var(--script); color: #fff; }
 .dj-lune-pct { font: 700 20px Georgia, serif; color: #ffd889; }
@@ -125,9 +125,11 @@
 .ld-case { min-height: 58px; padding: 3px 4px; display: flex; flex-direction: column; justify-content: space-between; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14); border-radius: 3px; }
 .ld-case b { font: 700 12px Georgia, serif; color: #f2ead2; }
 .ld-lunes { display: flex; gap: 2px; justify-content: center; }
-.ld-lunes img { width: 22px; height: 22px; border-radius: 50%; background: #000; }
+.ld-lunes img, .ld-lunes svg { width: 22px; height: 22px; border-radius: 50%; background: #000; }
+svg.lune { background: #000; }
+svg.lune .lune-ombre { opacity: .18; }
 .ld-case.ld-auj { outline: 2px solid #fff; }
 .ld-case.ld-pp, .ld-case.ld-nn, .ld-case.ld-np, .ld-case.ld-pn { background: color-mix(in srgb, var(--c) 30%, transparent); border-color: var(--c); }
 .ld-legende { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: #cfc4a4; }
 .ld-pastille { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; background: var(--c); border-radius: 2px; }
-@media (max-width: 520px) { .lune-dialog { padding: 14px 12px 16px; } .ld-case { min-height: 50px; } .ld-lunes img { width: 18px; height: 18px; } .lune-dialog h2 { font-size: 32px; } }
+@media (max-width: 520px) { .lune-dialog { padding: 14px 12px 16px; } .ld-case { min-height: 50px; } .ld-lunes img, .ld-lunes svg { width: 18px; height: 18px; } .lune-dialog h2 { font-size: 32px; } }
