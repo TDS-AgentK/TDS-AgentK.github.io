@@ -91,13 +91,16 @@
     svg.appendChild(svgEl("image", { href: url, width: "128", height: "130", "clip-path": "url(#" + id + ")" }));
     return svg;
   }
-  // Comme sur Chroniques du Temps : seul le mois et le jour comptent (année fixée à 1255), le jour lunaire est compté depuis le 1er janvier -7000.
-  function jourLunaire(mois, jour) { return Math.floor((Date.UTC(1255, mois - 1, jour) - Date.UTC(-7000, 0, 1)) / 86400000); }
+  // Comme sur Chroniques du Temps et le bot Discord : jour lunaire continu, compté en jours UTC depuis le 1er janvier -7000
+  // (J_ANCRE = jours jusqu'au 1er janvier 1257 ; le 1er janvier 2026 UTC = J_ANCRE + 0). Contrôle : 10/11/2026 -> 3 016 121.
+  var JOUR_MS = 86400000;
+  var J_ANCRE = (function () { var r = new Date(Date.UTC(2000, 0, 1)); r.setUTCFullYear(-7000); return Math.round((Date.UTC(1257, 0, 1) - r.getTime()) / JOUR_MS); })();
+  function jourLunaire(annee, mois, jour) { return J_ANCRE + Math.round((Date.UTC(annee, mois - 1, jour) - Date.UTC(2026, 0, 1)) / JOUR_MS); }
   // fraction : null = valeur officielle de la journée ; sinon jour lunaire fractionnaire (courbe sinusoïdale continue).
   // La phase écrite reste calculée sur la journée entière.
-  function lunes(mois, jour, fraction) {
+  function lunes(annee, mois, jour, fraction) {
     if (!lunesData) return [];
-    var n = jourLunaire(mois, jour);
+    var n = jourLunaire(annee, mois, jour);
     return Object.keys(lunesData).map(function (nom) {
       var l = lunesData[nom], p = pourcent(l, n), phase = phaseDe(p, pourcent(l, n - 1), pourcent(l, n + 1));
       var jf = fraction == null ? n : n + fraction, cur = pourcent(l, jf);
@@ -109,8 +112,8 @@
   var HEURE_GRILLE = 20;   // la grille mensuelle montre chaque jour à 20 h UTC
   function fractionGrille() { return HEURE_GRILLE / 24 - 0.5; }
   function pctTexte(p) { return p.toFixed(1).replace(".", ",") + " %"; }
-  function texteLunes(mois, jour) {
-    return lunes(mois, jour).map(function (x) { return x.nom + " " + pctTexte(x.pct) + " (" + x.phase.toLowerCase() + ")"; }).join(" · ");
+  function texteLunes(annee, mois, jour) {
+    return lunes(annee, mois, jour).map(function (x) { return x.nom + " " + pctTexte(x.pct) + " (" + x.phase.toLowerCase() + ")"; }).join(" · ");
   }
 
   // ---- construction de l'interface -----------------------------------------------------------------
@@ -166,7 +169,7 @@
   function majSens1() {
     var d = lireDateReelle(champReel.value);
     res1.textContent = d ? "En Vesperae : " + texteJeu(enJeu(d)) : "Choisissez une date valide.";
-    lunes1.textContent = d && lunesData ? "Lunes ce jour-là : " + texteLunes(d.getMonth() + 1, d.getDate()) : "";
+    lunes1.textContent = d && lunesData ? "Lunes ce jour-là : " + texteLunes(d.getFullYear(), d.getMonth() + 1, d.getDate()) : "";
   }
   function majSens2() {
     var j = parseInt(champJour.value, 10), m = parseInt(champMois.value, 10), a = parseInt(champAnnee.value, 10);
@@ -175,7 +178,7 @@
     var reelle = new Date(a + decalage, m - 1, j);
     if (reelle.getMonth() !== m - 1 || reelle.getDate() !== j) { res2.textContent = "Cette date n'existe pas : " + mois[m].nom + " n'a pas " + j + " jours cette année-là."; return; }
     res2.textContent = "Date réelle : " + texteReel(reelle) + " (" + jours[reelle.getDay() || 7] + ")";
-    if (lunesData) lunes2.textContent = "Lunes ce jour-là : " + texteLunes(reelle.getMonth() + 1, reelle.getDate());
+    if (lunesData) lunes2.textContent = "Lunes ce jour-là : " + texteLunes(reelle.getFullYear(), reelle.getMonth() + 1, reelle.getDate());
   }
 
   var auj = new Date();
@@ -187,7 +190,7 @@
   champReel.value = iso;
   champJour.value = j0.jour; champMois.value = j0.mois; champAnnee.value = j0.annee;
   majSens1(); majSens2();
-  lunes(auj.getUTCMonth() + 1, auj.getUTCDate(), fractionMaintenant(auj)).forEach(function (x) {
+  lunes(auj.getUTCFullYear(), auj.getUTCMonth() + 1, auj.getUTCDate(), fractionMaintenant(auj)).forEach(function (x) {
     var fig = el("figure", { "class": "dj-lune" });
     x.texteAlt = "Lune " + x.nom + " : " + pctTexte(x.cur) + ", " + x.phase.toLowerCase();
     fig.appendChild(dessinLune(x, 64));
@@ -216,7 +219,7 @@
     ];
     function codePhase(x) { return x.phase === "Pleine lune" ? "P" : x.phase === "Nouvelle lune" ? "N" : ""; }
     function lunesDuJour(d) {
-      var l = lunes(d.getMonth() + 1, d.getDate(), fractionGrille()), r = {};
+      var l = lunes(d.getFullYear(), d.getMonth() + 1, d.getDate(), fractionGrille()), r = {};
       l.forEach(function (x) { r[x.nom] = x; });
       return r;
     }
@@ -278,7 +281,7 @@
     function remplirListe() {
       pListe.innerHTML = "";
       var auj0 = midi(new Date()), res = prochaines(auj0);
-      pListe.appendChild(el("p", { "class": "ld-intro" }, "À partir d'aujourd'hui (" + dateCourte(auj0) + "). Comme sur Chroniques du Temps, les phases se répètent à l'identique chaque année."));
+      pListe.appendChild(el("p", { "class": "ld-intro" }, "À partir d'aujourd'hui (" + dateCourte(auj0) + "). Mêmes calculs que sur Chroniques du Temps."));
       TYPES.forEach(function (ty) {
         var bloc = el("section", { "class": "ld-type ld-" + ty.cle });
         bloc.appendChild(el("h3", null, ty.titre));
